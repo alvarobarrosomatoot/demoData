@@ -201,33 +201,43 @@
   <script>
     // ---- Configuration: list your interfaces here ----
     const interfaces = [
-      {
-        name: "Salesforce Mock",
-        href: "Salesforce_Contacts_Mock.html",
-        icon: "SalesforceFavicon.png",
-        desc: "Mock interface for Salesforce integration demo.",
-        tags: ["crm","salesforce","demo","mock"]
-        // uses default PARAM_NAME = 'username'
-      },
-      {
-        name: "Snowflake Mock",
-        href: "Snowflake_Mock.html",
-        icon: "SnowflakeFavicon.png",
-        desc: "Mock interface for Snowflake data workflows.",
-        tags: ["data","snowflake","warehouse","mock"]
-        // uses default PARAM_NAME = 'username'
-      },
-      {
-        name: "Adobe Experience Platform Mock",
-        href: "Adobe_Mock.html",
-        icon: "AdobeFavicon.png",
-        desc: "Mock interface for Adobe Experience Platform workflows.",
-        tags: ["aep","adobe","experience","cdp","mock"],
-        // Override the query parameter key for Adobe
-        paramKey: "experience"
-      }
-      // Add more entries as needed
-    ];
+  {
+    name: "Salesforce Mock",
+    href: "Salesforce_Contacts_Mock.html",
+    icon: "SalesforceFavicon.png",
+    desc: "Mock interface for Salesforce integration demo.",
+    tags: ["crm","salesforce","demo","mock"]
+  },
+  {
+    name: "Snowflake Mock",
+    href: "Snowflake_Mock.html",
+    icon: "SnowflakeFavicon.png",
+    desc: "Mock interface for Snowflake data workflows.",
+    tags: ["data","snowflake","warehouse","mock"]
+  },
+  {
+    name: "Adobe Experience Platform Mock",
+    href: "Adobe_Mock.html",
+    icon: "AdobeFavicon.png",
+    desc: "Mock interface for Adobe Experience Platform workflows.",
+    tags: ["aep","adobe","experience","cdp","mock"],
+    paramKey: "experience"
+  },
+  {
+    name: "Google BigQuery Mock",
+    href: "BigQuery_Consents.html",
+    icon: "supercloud_favicon.ico",
+    desc: "Mock interface for Google BigQuery consent database.",
+    tags: ["data","bigquery","google","cloud","warehouse","mock"]
+  },
+  {
+    name: "Oracle Responsys Mock",
+    href: "Oracle_Responsys_Mock.html",
+    icon: "OracleResponsysFavicon.png",
+    desc: "Mock interface for Oracle Responsys marketing platform.",
+    tags: ["marketing","oracle","responsys","email","campaigns","mock"]
+  }
+];
 
     // ---- Elements ----
     const cardsEl = document.getElementById('cards');
