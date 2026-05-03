@@ -452,18 +452,17 @@ pre.compact { white-space: pre-wrap; margin: 0; font-family: var(--mono); font-s
     </div>
     <div class="pinned-label">Viewing pinned projects.</div>
     <div class="tree">
-      <div class="tree-item level-0" onclick="this.classList.toggle('open')">
+      <div class="tree-item level-0">
         <span class="material-icons">arrow_drop_down</span>
         <span class="material-icons" style="color:#4285f4">workspaces</span>
         <span class="tree-label">consent-project</span>
       </div>
-      <div class="tree-item level-1" onclick="this.classList.toggle('open')">
+      <div class="tree-item level-1">
         <span class="material-icons">arrow_drop_down</span>
         <span class="material-icons" style="color:#4285f4">dataset</span>
         <span class="tree-label">Consents</span>
       </div>
       <div class="tree-item level-2 active">
-        <span class="material-icons" style="font-size:16px; margin-left:2px;">&#xf0ce;</span>
         <span class="material-icons" style="color:#4285f4">table_chart</span>
         <span class="tree-label">DataSubjectProfile</span>
       </div>
@@ -654,7 +653,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const COLUMN_ORDER = ['ItemInternalId','SUBJECT_ID','PURPOSE_NAME','CONSENT_TYPE','PREFERENCES','UPDATED_AT'];
 
   let allRows   = [];
-  let baseRows  = []; // after URL username prefilter
+  let baseRows  = [];
   let filtered  = [];
   let pageIndex = 0;
 
@@ -768,7 +767,7 @@ document.addEventListener('DOMContentLoaded', () => {
   function showMessage(msg) {
     buildHeader();
     tbody.innerHTML = `<tr><td colspan="${COLUMN_ORDER.length + 1}" style="padding:16px;color:var(--gcp-text-sec)">${escapeHtml(msg)}</td></tr>`;
-    pageRange.textContent = '—';
+    pageRange.textContent = '\u2014';
   }
 
   function renderPage() {
@@ -855,7 +854,7 @@ document.addEventListener('DOMContentLoaded', () => {
     try {
       const apiUrl  = (urlInput?.value || '').trim();
       const username = (userInput?.value || '').trim();
-      if (!apiUrl) { showMessage('Please configure the API URL in Settings (⚙️).'); return; }
+      if (!apiUrl) { showMessage('Please configure the API URL in Settings (\u2699\ufe0f).'); return; }
 
       showLoading(true);
       buildHeader();
@@ -877,22 +876,22 @@ document.addEventListener('DOMContentLoaded', () => {
             return rest || {};
           });
 
-        // URL username prefilter
+        // *** FIX: use USERNAME_EMAIL + .includes() to match working Salesforce pattern ***
         const urlUser = getUsernameFromUrl().toLowerCase();
         baseRows = urlUser
-          ? allRows.filter(r => String(r.SUBJECT_ID || '').toLowerCase() === urlUser)
+          ? allRows.filter(r => String(r.USERNAME_EMAIL || '').toLowerCase().includes(urlUser))
           : allRows.slice();
 
         applyFilters();
       } else {
         const html = await res.text();
         tbody.innerHTML = `<tr><td colspan="${COLUMN_ORDER.length + 1}">${sanitizeHtml(html)}</td></tr>`;
-        pageRange.textContent = '—';
+        pageRange.textContent = '\u2014';
       }
     } catch (e) {
       buildHeader();
       tbody.innerHTML = `<tr><td colspan="${COLUMN_ORDER.length + 1}" style="padding:16px;color:var(--status-withdrawn)">Failed to load data. ${escapeHtml(e.message)}</td></tr>`;
-      pageRange.textContent = '—';
+      pageRange.textContent = '\u2014';
       console.error(e);
     } finally {
       showLoading(false);
@@ -900,21 +899,17 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // === Events ===
-  // Run
   runBtn.addEventListener('click', e => { e.stopPropagation(); refreshResults(); });
 
-  // SQL toggle
   sqlToggle.addEventListener('click', () => {
     sqlWrap.classList.toggle('collapsed');
     sqlToggleIcon.textContent = sqlWrap.classList.contains('collapsed') ? 'chevron_right' : 'expand_more';
   });
 
-  // Filters
   filterText.addEventListener('input', applyFilters);
   filterConsent.addEventListener('change', applyFilters);
   clearBtn.addEventListener('click', () => { filterText.value = ''; filterConsent.value = ''; applyFilters(); });
 
-  // Pagination
   pageSizeSel.addEventListener('change', () => { pageIndex = 0; renderPage(); });
   firstBtn.addEventListener('click', () => { pageIndex = 0; renderPage(); });
   prevBtn.addEventListener('click', () => { pageIndex = Math.max(0, pageIndex - 1); renderPage(); });
@@ -929,17 +924,15 @@ document.addEventListener('DOMContentLoaded', () => {
     pageIndex = pages - 1; renderPage();
   });
 
-  // CSV export
   function doExport() {
     const csv = toCsv(filtered);
     if (!csv) return;
-    const ts = new Date().toISOString().replace(/[:.\-]/g, '').slice(0, 15);
+    const ts = new Date().toISOString().replace(/[:.\\-]/g, '').slice(0, 15);
     downloadFile(`bigquery-consents-${ts}.csv`, csv);
   }
   exportBtn.addEventListener('click', doExport);
   exportBtn2.addEventListener('click', doExport);
 
-  // Settings modal
   settingsBtn.addEventListener('click', () => settingsModal.classList.remove('hidden'));
   settingsCancel.addEventListener('click', () => settingsModal.classList.add('hidden'));
   settingsSave.addEventListener('click', () => {
@@ -948,7 +941,6 @@ document.addEventListener('DOMContentLoaded', () => {
   });
   settingsModal.addEventListener('click', e => { if (e.target === settingsModal) settingsModal.classList.add('hidden'); });
 
-  // View tabs (cosmetic toggle)
   document.querySelectorAll('.view-tabs .vtab').forEach(tab => {
     tab.addEventListener('click', () => {
       document.querySelectorAll('.view-tabs .vtab').forEach(t => t.classList.remove('active'));
@@ -958,7 +950,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // === Initial load ===
   buildHeader();
-  showMessage('Click Run ▶ in the query editor or press ⚙️ Settings to configure, then run.');
+  showMessage('Click Run \u25b6 in the query editor or press \u2699\ufe0f Settings to configure, then run.');
   refreshResults();
 });
 </script>
