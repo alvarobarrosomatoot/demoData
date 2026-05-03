@@ -595,8 +595,8 @@ document.addEventListener('DOMContentLoaded', () => {
   function showMessage(msg) {
     buildHeader();
     tbody.innerHTML = `<tr><td colspan="${COLUMN_ORDER.length + 1}" style="padding:20px;color:var(--text-sec)">${escapeHtml(msg)}</td></tr>`;
-    pageRange.textContent = '—';
-    recordCount.textContent = '—';
+    pageRange.textContent = '\u2014';
+    recordCount.textContent = '\u2014';
   }
 
   function renderPage() {
@@ -677,7 +677,7 @@ document.addEventListener('DOMContentLoaded', () => {
     try {
       const apiUrl   = (urlInput?.value || '').trim();
       const username = (userInput?.value || '').trim();
-      if (!apiUrl) { showMessage('Please configure the API URL in Settings (⚙️).'); return; }
+      if (!apiUrl) { showMessage('Please configure the API URL in Settings (\u2699\ufe0f).'); return; }
 
       showLoading(true); buildHeader();
       try { localStorage.setItem('ora_apiUrl', apiUrl); localStorage.setItem('ora_username', username); } catch {}
@@ -694,9 +694,10 @@ document.addEventListener('DOMContentLoaded', () => {
         allRows = (Array.isArray(data) ? data : (Array.isArray(data?.rows) ? data.rows : []))
           .map(r => { const { ['@odata.etag']: _omit, ...rest } = r || {}; return rest || {}; });
 
+        // *** FIX: use USERNAME_EMAIL + .includes() to match working Salesforce pattern ***
         const urlUser = getUsernameFromUrl().toLowerCase();
         baseRows = urlUser
-          ? allRows.filter(r => String(r.SUBJECT_ID || '').toLowerCase() === urlUser)
+          ? allRows.filter(r => String(r.USERNAME_EMAIL || '').toLowerCase().includes(urlUser))
           : allRows.slice();
 
         applyFilters();
@@ -704,12 +705,12 @@ document.addEventListener('DOMContentLoaded', () => {
       } else {
         const html = await res.text();
         tbody.innerHTML = `<tr><td colspan="${COLUMN_ORDER.length + 1}">${sanitizeHtml(html)}</td></tr>`;
-        pageRange.textContent = '—'; recordCount.textContent = '—';
+        pageRange.textContent = '\u2014'; recordCount.textContent = '\u2014';
       }
     } catch (e) {
       buildHeader();
       tbody.innerHTML = `<tr><td colspan="${COLUMN_ORDER.length + 1}" style="padding:20px;color:var(--status-withdrawn)">Failed to load records. ${escapeHtml(e.message)}</td></tr>`;
-      pageRange.textContent = '—'; recordCount.textContent = '—';
+      pageRange.textContent = '\u2014'; recordCount.textContent = '\u2014';
       console.error(e);
     } finally { showLoading(false); }
   }
@@ -761,7 +762,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Init
   buildHeader();
-  showMessage('Click Refresh to load records, or configure the API endpoint in ⚙️ Settings.');
+  showMessage('Click Refresh to load records, or configure the API endpoint in \u2699\ufe0f Settings.');
   refreshResults();
 });
 </script>
