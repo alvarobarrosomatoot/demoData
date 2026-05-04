@@ -37,246 +37,174 @@
   --sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
   --mono: 'Roboto Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 }
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html, body { height: 100%; font-family: var(--sans); font-size: 13px; color: var(--text); background: var(--bg); overflow: hidden; }
-body { display: flex; flex-direction: column; }
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;font-family:var(--sans);font-size:13px;color:var(--text);background:var(--bg);overflow:hidden}
+body{display:flex;flex-direction:column}
 
 /* ===== Top Header ===== */
-.ora-header {
-  display: flex; align-items: center; height: 48px; padding: 0 16px;
-  background: var(--header-bg); color: var(--text-inv); flex-shrink: 0; z-index: 100;
-}
-.ora-header .oracle-logo {
-  font-size: 18px; font-weight: 700; letter-spacing: 3px; color: var(--oracle-red-bright);
-  text-transform: uppercase; margin-right: 6px;
-}
-.ora-header .product-name {
-  font-size: 15px; font-weight: 400; color: #ccc; margin-left: 2px;
-  border-left: 1px solid #555; padding-left: 10px;
-}
-.ora-header .header-right { margin-left: auto; display: flex; align-items: center; gap: 4px; }
-.ora-header .h-btn {
-  width: 34px; height: 34px; display: flex; align-items: center; justify-content: center;
-  border-radius: 50%; cursor: pointer; border: none; background: transparent; color: #ccc;
-}
-.ora-header .h-btn:hover { background: rgba(255,255,255,0.1); color: #fff; }
-.ora-header .h-btn .material-icons { font-size: 20px; }
-.ora-header .user-pill {
-  display: flex; align-items: center; gap: 6px; padding: 4px 10px;
-  border-radius: 4px; cursor: pointer; font-size: 13px; color: #ccc;
-}
-.ora-header .user-pill:hover { background: rgba(255,255,255,0.1); }
-.ora-header .avatar {
-  width: 28px; height: 28px; border-radius: 50%; background: var(--oracle-red);
-  display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 600; color: #fff;
-}
+.ora-header{display:flex;align-items:center;height:48px;padding:0 16px;background:var(--header-bg);color:var(--text-inv);flex-shrink:0;z-index:100}
+.ora-header .oracle-logo{font-size:18px;font-weight:700;letter-spacing:3px;color:var(--oracle-red-bright);text-transform:uppercase;margin-right:6px}
+.ora-header .product-name{font-size:15px;font-weight:400;color:#ccc;margin-left:2px;border-left:1px solid #555;padding-left:10px}
+.ora-header .header-right{margin-left:auto;display:flex;align-items:center;gap:4px}
+.ora-header .h-btn{width:34px;height:34px;display:flex;align-items:center;justify-content:center;border-radius:50%;cursor:pointer;border:none;background:transparent;color:#ccc}
+.ora-header .h-btn:hover{background:rgba(255,255,255,0.1);color:#fff}
+.ora-header .h-btn .material-icons{font-size:20px}
+.ora-header .avatar{width:28px;height:28px;border-radius:50%;background:var(--oracle-red);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;color:#fff}
 
-/* ===== Main Nav Bar ===== */
-.ora-nav {
-  display: flex; align-items: center; height: 40px; padding: 0 16px;
-  background: var(--header-bg2); flex-shrink: 0; gap: 0;
-}
-.ora-nav .nav-tab {
-  padding: 0 18px; height: 100%; display: flex; align-items: center;
-  color: #bbb; font-size: 13px; font-weight: 500; cursor: pointer;
-  border-bottom: 3px solid transparent; transition: color 0.15s;
-}
-.ora-nav .nav-tab:hover { color: #fff; }
-.ora-nav .nav-tab.active {
-  color: #fff; border-bottom-color: var(--oracle-red);
-}
+/* ===== Main Nav ===== */
+.ora-nav{display:flex;align-items:center;height:40px;padding:0 16px;background:var(--header-bg2);flex-shrink:0;gap:0}
+.ora-nav .nav-tab{padding:0 18px;height:100%;display:flex;align-items:center;color:#bbb;font-size:13px;font-weight:500;cursor:pointer;border-bottom:3px solid transparent;transition:color .15s}
+.ora-nav .nav-tab:hover{color:#fff}
+.ora-nav .nav-tab.active{color:#fff;border-bottom-color:var(--oracle-red)}
 
 /* ===== Main Layout ===== */
-.ora-main { display: flex; flex: 1; overflow: hidden; }
+.ora-main{display:flex;flex:1;overflow:hidden}
 
 /* ===== Left Sidebar ===== */
-.ora-sidebar {
-  width: 250px; background: var(--surface); border-right: 1px solid var(--border);
-  display: flex; flex-direction: column; flex-shrink: 0; overflow-y: auto;
-}
-.sidebar-section {
-  padding: 14px 16px 6px; font-size: 11px; font-weight: 600; color: var(--text-hint);
-  text-transform: uppercase; letter-spacing: 0.8px;
-}
-.sidebar-item {
-  display: flex; align-items: center; gap: 6px; padding: 7px 16px; cursor: pointer;
-  font-size: 13px; color: var(--text); white-space: nowrap;
-}
-.sidebar-item:hover { background: #f5f5f5; }
-.sidebar-item.active { background: var(--active-bg); color: var(--oracle-red); font-weight: 600; border-left: 3px solid var(--oracle-red); }
-.sidebar-item .material-icons { font-size: 18px; color: var(--text-hint); flex-shrink: 0; }
-.sidebar-item.active .material-icons { color: var(--oracle-red); }
-.sidebar-item.level-1 { padding-left: 32px; }
-.sidebar-item.level-2 { padding-left: 48px; }
-.sidebar-item .item-label { overflow: hidden; text-overflow: ellipsis; }
+.ora-sidebar{width:260px;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;overflow-y:auto}
+.sidebar-section{padding:14px 16px 6px;font-size:11px;font-weight:600;color:var(--text-hint);text-transform:uppercase;letter-spacing:.8px}
+.sidebar-item{display:flex;align-items:center;gap:6px;padding:7px 16px;cursor:pointer;font-size:13px;color:var(--text);white-space:nowrap;position:relative}
+.sidebar-item:hover{background:#f5f5f5}
+.sidebar-item.active{background:var(--active-bg);color:var(--oracle-red);font-weight:600;border-left:3px solid var(--oracle-red)}
+.sidebar-item .material-icons{font-size:18px;color:var(--text-hint);flex-shrink:0}
+.sidebar-item.active .material-icons{color:var(--oracle-red)}
+.sidebar-item .item-label{overflow:hidden;text-overflow:ellipsis;flex:1}
+.sidebar-item.level-1{padding-left:32px}
+.sidebar-badge{min-width:20px;height:20px;border-radius:10px;background:var(--oracle-red);color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;padding:0 6px;margin-left:auto}
+.sidebar-badge.hidden{display:none}
 
 /* ===== Content Area ===== */
-.ora-content { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
-
-/* Breadcrumb */
-.breadcrumb {
-  display: flex; align-items: center; gap: 6px; padding: 10px 20px;
-  background: var(--surface); border-bottom: 1px solid var(--border); font-size: 12px;
-  color: var(--text-sec); flex-shrink: 0;
-}
-.breadcrumb a { color: var(--oracle-red); text-decoration: none; }
-.breadcrumb a:hover { text-decoration: underline; }
-.breadcrumb .sep { color: var(--text-hint); }
-
-/* Content Header */
-.content-header {
-  display: flex; align-items: center; gap: 16px; padding: 14px 20px;
-  background: var(--surface); border-bottom: 1px solid var(--border); flex-shrink: 0;
-}
-.content-header .table-title {
-  font-size: 20px; font-weight: 600; color: var(--text);
-}
-.content-header .header-actions { display: flex; align-items: center; gap: 8px; margin-left: auto; }
-.ora-btn {
-  display: inline-flex; align-items: center; gap: 5px; padding: 6px 14px;
-  border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface);
-  color: var(--text); font-size: 13px; font-weight: 500; cursor: pointer; font-family: var(--sans);
-  transition: background 0.15s;
-}
-.ora-btn:hover { background: #f5f5f5; }
-.ora-btn .material-icons { font-size: 16px; }
-.ora-btn.primary { background: var(--oracle-red); color: #fff; border-color: var(--oracle-red); }
-.ora-btn.primary:hover { background: var(--oracle-red-dark); }
-
-/* View Tabs */
-.view-tabs {
-  display: flex; gap: 0; background: var(--surface); border-bottom: 1px solid var(--border);
-  flex-shrink: 0; padding: 0 20px;
-}
-.view-tabs .vtab {
-  padding: 10px 20px; font-size: 13px; font-weight: 500; color: var(--text-sec);
-  cursor: pointer; border-bottom: 3px solid transparent;
-}
-.view-tabs .vtab:hover { color: var(--text); }
-.view-tabs .vtab.active { color: var(--oracle-red); border-bottom-color: var(--oracle-red); }
+.ora-content{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.breadcrumb{display:flex;align-items:center;gap:6px;padding:10px 20px;background:var(--surface);border-bottom:1px solid var(--border);font-size:12px;color:var(--text-sec);flex-shrink:0}
+.breadcrumb a{color:var(--oracle-red);text-decoration:none}
+.breadcrumb a:hover{text-decoration:underline}
+.breadcrumb .sep{color:var(--text-hint)}
+.content-header{display:flex;align-items:center;gap:16px;padding:14px 20px;background:var(--surface);border-bottom:1px solid var(--border);flex-shrink:0}
+.content-header .table-title{font-size:20px;font-weight:600;color:var(--text)}
+.content-header .header-actions{display:flex;align-items:center;gap:8px;margin-left:auto}
+.ora-btn{display:inline-flex;align-items:center;gap:5px;padding:6px 14px;border:1px solid var(--border);border-radius:var(--radius);background:var(--surface);color:var(--text);font-size:13px;font-weight:500;cursor:pointer;font-family:var(--sans);transition:background .15s}
+.ora-btn:hover{background:#f5f5f5}
+.ora-btn .material-icons{font-size:16px}
+.ora-btn.primary{background:var(--oracle-red);color:#fff;border-color:var(--oracle-red)}
+.ora-btn.primary:hover{background:var(--oracle-red-dark)}
+.ora-btn.outline-red{background:#fff;color:var(--oracle-red);border-color:var(--oracle-red)}
+.ora-btn.outline-red:hover{background:var(--active-bg)}
+.view-tabs{display:flex;gap:0;background:var(--surface);border-bottom:1px solid var(--border);flex-shrink:0;padding:0 20px}
+.view-tabs .vtab{padding:10px 20px;font-size:13px;font-weight:500;color:var(--text-sec);cursor:pointer;border-bottom:3px solid transparent}
+.view-tabs .vtab:hover{color:var(--text)}
+.view-tabs .vtab.active{color:var(--oracle-red);border-bottom-color:var(--oracle-red)}
 
 /* ===== Filter Bar ===== */
-.filter-bar {
-  display: flex; align-items: center; gap: 8px; padding: 10px 20px;
-  background: var(--surface); border-bottom: 1px solid var(--border); flex-shrink: 0; flex-wrap: wrap;
-}
-.filter-bar input[type="text"] {
-  padding: 7px 10px; border: 1px solid var(--border); border-radius: var(--radius);
-  font-size: 13px; min-width: 220px; font-family: var(--sans); outline: none;
-}
-.filter-bar input:focus { border-color: var(--oracle-red); box-shadow: 0 0 0 1px var(--oracle-red); }
-.filter-bar select {
-  padding: 7px 10px; border: 1px solid var(--border); border-radius: var(--radius);
-  font-size: 13px; font-family: var(--sans); background: #fff; outline: none;
-}
-.filter-bar select:focus { border-color: var(--oracle-red); }
-.filter-bar .spacer { flex: 1; }
+.filter-bar{display:flex;align-items:center;gap:8px;padding:10px 20px;background:var(--surface);border-bottom:1px solid var(--border);flex-shrink:0;flex-wrap:wrap}
+.filter-bar input[type="text"]{padding:7px 10px;border:1px solid var(--border);border-radius:var(--radius);font-size:13px;min-width:220px;font-family:var(--sans);outline:none}
+.filter-bar input:focus{border-color:var(--oracle-red);box-shadow:0 0 0 1px var(--oracle-red)}
+.filter-bar select{padding:7px 10px;border:1px solid var(--border);border-radius:var(--radius);font-size:13px;font-family:var(--sans);background:#fff;outline:none}
+.filter-bar select:focus{border-color:var(--oracle-red)}
+.filter-bar .spacer{flex:1}
 
 /* ===== Legend ===== */
-.legend-bar {
-  display: flex; flex-wrap: wrap; align-items: center; gap: 14px; padding: 6px 20px;
-  background: #fafafa; border-bottom: 1px solid var(--border); font-size: 12px;
-  color: var(--text-sec); flex-shrink: 0;
-}
-.legend-bar .legend-title { font-weight: 600; }
-.legend-item { display: inline-flex; align-items: center; gap: 5px; }
-.status-dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; }
-.dot-active { background: var(--status-active); }
-.dot-withdrawn { background: var(--status-withdrawn); }
-.dot-notoptout { background: var(--status-notoptout); }
-.dot-pending { background: var(--status-pending); }
-.dot-expired { background: var(--status-expired); }
+.legend-bar{display:flex;flex-wrap:wrap;align-items:center;gap:14px;padding:6px 20px;background:#fafafa;border-bottom:1px solid var(--border);font-size:12px;color:var(--text-sec);flex-shrink:0}
+.legend-bar .legend-title{font-weight:600}
+.legend-item{display:inline-flex;align-items:center;gap:5px}
+.status-dot{display:inline-block;width:10px;height:10px;border-radius:50%}
+.dot-active{background:var(--status-active)}
+.dot-withdrawn{background:var(--status-withdrawn)}
+.dot-notoptout{background:var(--status-notoptout)}
+.dot-pending{background:var(--status-pending)}
+.dot-expired{background:var(--status-expired)}
 
 /* ===== Data Table ===== */
-.table-area { position: relative; flex: 1; display: flex; flex-direction: column; overflow: hidden; }
-.table-container { flex: 1; overflow: auto; background: #fff; }
-table.ora-table { width: 100%; border-collapse: collapse; table-layout: auto; min-width: 900px; }
-table.ora-table thead th {
-  position: sticky; top: 0; z-index: 2;
-  background: #e8e8e8; color: var(--text); font-weight: 600; font-size: 12px;
-  padding: 10px 12px; text-align: left; border-bottom: 2px solid var(--border);
-  text-transform: uppercase; letter-spacing: 0.3px; white-space: nowrap;
-}
-table.ora-table thead th.col-row { width: 50px; }
-table.ora-table tbody td {
-  padding: 9px 12px; border-bottom: 1px solid var(--border-light); font-size: 13px; vertical-align: top;
-}
-table.ora-table tbody tr:nth-child(even) { background: var(--row-alt); }
-table.ora-table tbody tr:hover { background: var(--row-hover); }
-.cell-mono { font-family: var(--mono); font-size: 12px; }
-.cell-row { color: var(--text-hint); font-family: var(--mono); font-size: 12px; }
+.table-area{position:relative;flex:1;display:flex;flex-direction:column;overflow:hidden}
+.table-container{flex:1;overflow:auto;background:#fff}
+table.ora-table{width:100%;border-collapse:collapse;table-layout:auto;min-width:900px}
+table.ora-table thead th{position:sticky;top:0;z-index:2;background:#e8e8e8;color:var(--text);font-weight:600;font-size:12px;padding:10px 12px;text-align:left;border-bottom:2px solid var(--border);text-transform:uppercase;letter-spacing:.3px;white-space:nowrap}
+table.ora-table thead th.col-row{width:50px}
+table.ora-table tbody td{padding:9px 12px;border-bottom:1px solid var(--border-light);font-size:13px;vertical-align:top}
+table.ora-table tbody tr:nth-child(even){background:var(--row-alt)}
+table.ora-table tbody tr:hover{background:var(--row-hover)}
+.cell-mono{font-family:var(--mono);font-size:12px}
+.cell-row{color:var(--text-hint);font-family:var(--mono);font-size:12px}
 
 /* Chips */
-.chip {
-  display: inline-block; border: 1px solid var(--border); border-radius: 12px;
-  padding: 1px 8px; margin: 2px 4px 2px 0; background: #f5f5f5; color: var(--text-sec); font-size: 11px;
-}
-.chip.on { background: #e6f4ea; color: #0d652d; border-color: #ceead6; }
-pre.compact { white-space: pre-wrap; margin: 0; font-family: var(--mono); font-size: 12px; }
+.chip{display:inline-block;border:1px solid var(--border);border-radius:12px;padding:1px 8px;margin:2px 4px 2px 0;background:#f5f5f5;color:var(--text-sec);font-size:11px}
+.chip.on{background:#e6f4ea;color:#0d652d;border-color:#ceead6}
+.chip.off{background:#fce8e6;color:#c5221f;border-color:#f5c6c2}
+.chip.purpose{background:#eef2ff;color:#3b5998;border-color:#c7d2fe}
+pre.compact{white-space:pre-wrap;margin:0;font-family:var(--mono);font-size:12px}
 
 /* ===== Pagination ===== */
-.pagination-bar {
-  display: flex; align-items: center; gap: 12px; padding: 10px 20px;
-  background: var(--surface); border-top: 1px solid var(--border); flex-shrink: 0; flex-wrap: wrap;
-}
-.pagination-bar .page-label { font-size: 13px; color: var(--text-sec); }
-.pagination-bar select {
-  padding: 5px 8px; border: 1px solid var(--border); border-radius: var(--radius);
-  font-size: 13px; background: #fff;
-}
-.pagination-bar .range-text { font-size: 13px; color: var(--text-sec); margin-left: auto; }
-.page-btn {
-  padding: 5px 10px; border: 1px solid var(--border); border-radius: var(--radius);
-  background: #fff; cursor: pointer; font-size: 12px; color: var(--text-sec);
-  display: inline-flex; align-items: center; gap: 3px; font-family: var(--sans);
-}
-.page-btn:hover:not(:disabled) { background: #f5f5f5; }
-.page-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.pagination-bar{display:flex;align-items:center;gap:12px;padding:10px 20px;background:var(--surface);border-top:1px solid var(--border);flex-shrink:0;flex-wrap:wrap}
+.pagination-bar .page-label{font-size:13px;color:var(--text-sec)}
+.pagination-bar select{padding:5px 8px;border:1px solid var(--border);border-radius:var(--radius);font-size:13px;background:#fff}
+.pagination-bar .range-text{font-size:13px;color:var(--text-sec);margin-left:auto}
+.page-btn{padding:5px 10px;border:1px solid var(--border);border-radius:var(--radius);background:#fff;cursor:pointer;font-size:12px;color:var(--text-sec);display:inline-flex;align-items:center;gap:3px;font-family:var(--sans)}
+.page-btn:hover:not(:disabled){background:#f5f5f5}
+.page-btn:disabled{opacity:.4;cursor:not-allowed}
 
-/* ===== Bottom Status Bar ===== */
-.bottom-bar {
-  display: flex; align-items: center; height: 32px; padding: 0 20px;
-  background: var(--header-bg2); color: #aaa; font-size: 12px; flex-shrink: 0; gap: 20px;
-}
-.bottom-bar .bb-item { display: flex; align-items: center; gap: 4px; }
-.bottom-bar .bb-item .material-icons { font-size: 14px; }
+/* ===== Bottom Bar ===== */
+.bottom-bar{display:flex;align-items:center;height:32px;padding:0 20px;background:var(--header-bg2);color:#aaa;font-size:12px;flex-shrink:0;gap:20px}
+.bottom-bar .bb-item{display:flex;align-items:center;gap:4px}
+.bottom-bar .bb-item .material-icons{font-size:14px}
 
 /* ===== Loading ===== */
-.loading-overlay {
-  position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
-  background: rgba(255,255,255,0.85); z-index: 10; font-size: 14px; color: var(--text-sec);
-}
-.loading-overlay.hidden { display: none; }
-@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+.loading-overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.85);z-index:10;font-size:14px;color:var(--text-sec)}
+.loading-overlay.hidden{display:none}
+@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
 
-/* ===== Settings Modal ===== */
-.modal-overlay {
-  position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 500;
-  display: flex; align-items: center; justify-content: center;
-}
-.modal-overlay.hidden { display: none; }
-.modal-box {
-  background: #fff; border-radius: 8px; box-shadow: 0 11px 15px -7px rgba(0,0,0,.2), 0 24px 38px 3px rgba(0,0,0,.14);
-  padding: 28px; min-width: 480px; max-width: 600px; width: 90%;
-}
-.modal-box h3 {
-  font-size: 18px; font-weight: 600; margin-bottom: 20px; color: var(--text);
-  padding-bottom: 12px; border-bottom: 2px solid var(--oracle-red);
-}
-.modal-box label { display: block; font-size: 12px; font-weight: 600; margin-bottom: 4px; color: var(--text-sec); text-transform: uppercase; letter-spacing: 0.5px; }
-.modal-box input[type="text"] {
-  width: 100%; padding: 9px 10px; border: 1px solid var(--border); border-radius: var(--radius);
-  font-size: 13px; margin-bottom: 16px; font-family: var(--sans); outline: none;
-}
-.modal-box input:focus { border-color: var(--oracle-red); box-shadow: 0 0 0 1px var(--oracle-red); }
-.modal-box .modal-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 8px; }
+/* ===== Modals ===== */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:500;display:flex;align-items:center;justify-content:center}
+.modal-overlay.hidden{display:none}
+.modal-box{background:#fff;border-radius:8px;box-shadow:0 11px 15px -7px rgba(0,0,0,.2),0 24px 38px 3px rgba(0,0,0,.14);padding:0;min-width:480px;max-width:640px;width:90%;overflow:hidden}
+.modal-header{padding:18px 24px;border-bottom:3px solid var(--oracle-red);font-size:17px;font-weight:600;display:flex;align-items:center;gap:10px}
+.modal-header .material-icons{font-size:22px;color:var(--oracle-red)}
+.modal-body{padding:20px 24px}
+.modal-footer{padding:14px 24px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:8px;background:#fafafa}
+.modal-box label{display:block;font-size:12px;font-weight:600;margin-bottom:4px;color:var(--text-sec);text-transform:uppercase;letter-spacing:.5px}
+.modal-box input[type="text"]{width:100%;padding:9px 10px;border:1px solid var(--border);border-radius:var(--radius);font-size:13px;margin-bottom:16px;font-family:var(--sans);outline:none}
+.modal-box input:focus{border-color:var(--oracle-red);box-shadow:0 0 0 1px var(--oracle-red)}
+
+/* Journey tiles */
+.journey-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px}
+.journey-tile{border:1px solid var(--border);border-radius:8px;padding:14px;cursor:pointer;display:flex;align-items:center;gap:12px;transition:all .15s}
+.journey-tile:hover{border-color:var(--oracle-red);background:var(--active-bg);transform:translateY(-1px);box-shadow:var(--shadow)}
+.journey-tile .j-icon{width:40px;height:40px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.journey-tile .j-info{flex:1}
+.journey-tile .j-name{font-weight:600;font-size:13px;color:var(--text)}
+.journey-tile .j-channel{font-size:11px;color:var(--text-sec);margin-top:2px}
+
+/* Result card */
+.result-card{border-radius:8px;padding:24px;text-align:center}
+.result-card.success{background:#e6f4ea;border:1px solid #ceead6}
+.result-card.error{background:#fce8e6;border:1px solid #f5c6c2}
+.result-card .r-icon{font-size:48px;margin-bottom:12px}
+.result-card.success .r-icon{color:var(--status-active)}
+.result-card.error .r-icon{color:var(--status-withdrawn)}
+.result-card .r-title{font-size:16px;font-weight:600;margin-bottom:6px}
+.result-card .r-sub{font-size:13px;color:var(--text-sec);margin-bottom:4px}
+.result-card .r-detail{font-size:12px;color:var(--text-hint);margin-top:8px;padding:8px;background:rgba(0,0,0,.04);border-radius:4px;text-align:left;font-family:var(--mono)}
+
+/* Journey detail view */
+.journey-contacts-table{width:100%;border-collapse:collapse;margin-top:12px}
+.journey-contacts-table th,.journey-contacts-table td{padding:8px 12px;border-bottom:1px solid var(--border-light);font-size:13px;text-align:left}
+.journey-contacts-table th{background:#f5f5f5;font-weight:600;font-size:12px;text-transform:uppercase}
+
+/* DataSubject table specifics */
+.ds-channels{display:flex;flex-wrap:wrap;gap:4px}
+.channel-chip{display:inline-flex;align-items:center;gap:3px;border-radius:12px;padding:2px 8px;font-size:11px;font-weight:500;border:1px solid}
+.channel-chip.on{background:#e6f4ea;color:#0d652d;border-color:#ceead6}
+.channel-chip.off{background:#f5f5f5;color:#999;border-color:#ddd}
+.channel-chip .material-icons{font-size:12px}
+
+/* View panels */
+.view-panel{display:none;flex:1;flex-direction:column;overflow:hidden}
+.view-panel.active{display:flex}
 
 /* ===== Responsive ===== */
-@media (max-width: 1000px) { .ora-sidebar { display: none; } }
-@media print {
-  .table-container { overflow: visible !important; }
-  table.ora-table thead th { position: static !important; }
-  .pagination-bar, .bottom-bar, .ora-header, .ora-nav, .ora-sidebar, .breadcrumb { display: none !important; }
+@media(max-width:1000px){.ora-sidebar{display:none}}
+@media print{
+  .table-container{overflow:visible!important}
+  table.ora-table thead th{position:static!important}
+  .pagination-bar,.bottom-bar,.ora-header,.ora-nav,.ora-sidebar,.breadcrumb{display:none!important}
 }
 </style>
 </head>
@@ -290,9 +218,7 @@ pre.compact { white-space: pre-wrap; margin: 0; font-family: var(--mono); font-s
     <button class="h-btn" title="Help"><span class="material-icons">help_outline</span></button>
     <button class="h-btn" title="Notifications"><span class="material-icons">notifications_none</span></button>
     <button class="h-btn" id="settings-btn" title="Settings"><span class="material-icons">settings</span></button>
-    <div class="user-pill">
-      <div class="avatar">A</div>
-    </div>
+    <div class="avatar">A</div>
   </div>
 </header>
 
@@ -308,23 +234,43 @@ pre.compact { white-space: pre-wrap; margin: 0; font-family: var(--mono); font-s
 
 <!-- ===== MAIN LAYOUT ===== -->
 <div class="ora-main">
-
   <!-- Sidebar -->
-  <aside class="ora-sidebar">
+  <aside class="ora-sidebar" id="sidebar">
     <div class="sidebar-section">Profile Lists</div>
-    <div class="sidebar-item">
-      <span class="material-icons">chevron_right</span>
-      <span class="material-icons">folder</span>
-      <span class="item-label">Contact_Central</span>
+    <div class="sidebar-item active" data-view="consents">
+      <span class="material-icons">list_alt</span>
+      <span class="item-label">Consents</span>
     </div>
-    <div class="sidebar-item">
-      <span class="material-icons">expand_more</span>
-      <span class="material-icons">folder_open</span>
-      <span class="item-label">Consent_Database</span>
+    <div class="sidebar-item" data-view="profiles">
+      <span class="material-icons">people</span>
+      <span class="item-label">DataSubjectProfiles</span>
     </div>
-    <div class="sidebar-item level-1 active">
-      <span class="material-icons">table_chart</span>
-      <span class="item-label">DataSubjectProfile</span>
+
+    <div class="sidebar-section">Journeys</div>
+    <div class="sidebar-item" data-view="journey" data-journey="0">
+      <span class="material-icons">email</span>
+      <span class="item-label">Email Marketing Journey</span>
+      <span class="sidebar-badge hidden" id="jbadge-0">0</span>
+    </div>
+    <div class="sidebar-item" data-view="journey" data-journey="1">
+      <span class="material-icons">sms</span>
+      <span class="item-label">SMS Engagement Journey</span>
+      <span class="sidebar-badge hidden" id="jbadge-1">0</span>
+    </div>
+    <div class="sidebar-item" data-view="journey" data-journey="2">
+      <span class="material-icons">notifications_active</span>
+      <span class="item-label">Push Notification Journey</span>
+      <span class="sidebar-badge hidden" id="jbadge-2">0</span>
+    </div>
+    <div class="sidebar-item" data-view="journey" data-journey="3">
+      <span class="material-icons">chat</span>
+      <span class="item-label">WhatsApp Campaign</span>
+      <span class="sidebar-badge hidden" id="jbadge-3">0</span>
+    </div>
+    <div class="sidebar-item" data-view="journey" data-journey="4">
+      <span class="material-icons">markunread_mailbox</span>
+      <span class="item-label">Direct Mail Journey</span>
+      <span class="sidebar-badge hidden" id="jbadge-4">0</span>
     </div>
 
     <div class="sidebar-section">Supplemental Tables</div>
@@ -338,8 +284,6 @@ pre.compact { white-space: pre-wrap; margin: 0; font-family: var(--mono); font-s
       <span class="material-icons">table_view</span>
       <span class="item-label">Purpose_Mapping</span>
     </div>
-
-    <div class="sidebar-section">Profile Extensions</div>
     <div class="sidebar-item">
       <span class="material-icons">chevron_right</span>
       <span class="material-icons">history</span>
@@ -349,87 +293,104 @@ pre.compact { white-space: pre-wrap; margin: 0; font-family: var(--mono); font-s
 
   <!-- Content Area -->
   <main class="ora-content">
-
-    <!-- Breadcrumb -->
-    <div class="breadcrumb">
+    <div class="breadcrumb" id="breadcrumb">
       <a href="#">Data</a><span class="sep">›</span>
       <a href="#">Profile Lists</a><span class="sep">›</span>
-      <a href="#">Consent_Database</a><span class="sep">›</span>
-      <span>DataSubjectProfile</span>
+      <span id="bc-current">Consents</span>
     </div>
 
-    <!-- Content Header -->
     <div class="content-header">
-      <span class="table-title">DataSubjectProfile</span>
+      <span class="table-title" id="content-title">Consents</span>
       <div class="header-actions">
         <button class="ora-btn" id="export-top"><span class="material-icons">file_upload</span>Export</button>
-        <button class="ora-btn"><span class="material-icons">file_download</span>Import</button>
-        <button class="ora-btn"><span class="material-icons">edit</span>Edit Schema</button>
         <button class="ora-btn primary" id="refresh-btn"><span class="material-icons">refresh</span>Refresh</button>
         <button class="ora-btn ot-open-webform" id="ot-c9322d35-cb63-4974-b65a-5d415f818a05" style="font-size:12px;">Open web form</button>
       </div>
     </div>
 
-    <!-- View Tabs -->
-    <div class="view-tabs">
-      <div class="vtab active" data-view="records">Records</div>
-      <div class="vtab" data-view="schema">Schema</div>
-      <div class="vtab" data-view="settings">Settings</div>
-    </div>
-
-    <!-- Filter Bar -->
-    <div class="filter-bar">
-      <input type="text" id="filter-text" placeholder="Filter (subject / purpose)..."/>
-      <select id="filter-consent">
-        <option value="">All statuses</option>
-        <option>ACTIVE</option>
-        <option>WITHDRAWN</option>
-        <option>NOT_OPT_OUT</option>
-        <option>PENDING</option>
-        <option>EXPIRED</option>
-      </select>
-      <button class="ora-btn" id="clear-filters">Clear</button>
-      <span class="spacer"></span>
-      <button class="ora-btn" id="export-csv"><span class="material-icons" style="font-size:14px">download</span>Export CSV</button>
-    </div>
-
-    <!-- Legend -->
-    <div class="legend-bar" id="legend">
-      <span class="legend-title">Legend:</span>
-      <span class="legend-item"><span class="status-dot dot-active"></span>ACTIVE</span>
-      <span class="legend-item"><span class="status-dot dot-withdrawn"></span>WITHDRAWN</span>
-      <span class="legend-item"><span class="status-dot dot-notoptout"></span>NOT_OPT_OUT</span>
-      <span class="legend-item"><span class="status-dot dot-pending"></span>PENDING</span>
-      <span class="legend-item"><span class="status-dot dot-expired"></span>EXPIRED</span>
-    </div>
-
-    <!-- Table Area -->
-    <div class="table-area">
-      <div class="loading-overlay hidden" id="loading">
-        <span class="material-icons" style="font-size:22px;margin-right:8px;animation:spin 1s linear infinite">refresh</span>Loading records…
+    <!-- ============ VIEW: CONSENTS ============ -->
+    <div class="view-panel active" id="view-consents">
+      <div class="view-tabs">
+        <div class="vtab active">Records</div>
+        <div class="vtab">Schema</div>
+        <div class="vtab">Settings</div>
       </div>
-      <div class="table-container">
-        <table class="ora-table" id="results-table">
-          <thead id="thead"></thead>
-          <tbody id="tbody"></tbody>
-        </table>
+      <div class="filter-bar">
+        <input type="text" id="filter-text" placeholder="Filter (subject / purpose)..."/>
+        <select id="filter-consent">
+          <option value="">All statuses</option>
+          <option>ACTIVE</option><option>WITHDRAWN</option><option>NOT_OPT_OUT</option><option>PENDING</option><option>EXPIRED</option>
+        </select>
+        <button class="ora-btn" id="clear-filters">Clear</button>
+        <span class="spacer"></span>
+        <button class="ora-btn" id="export-csv"><span class="material-icons" style="font-size:14px">download</span>Export CSV</button>
+      </div>
+      <div class="legend-bar">
+        <span class="legend-title">Legend:</span>
+        <span class="legend-item"><span class="status-dot dot-active"></span>ACTIVE</span>
+        <span class="legend-item"><span class="status-dot dot-withdrawn"></span>WITHDRAWN</span>
+        <span class="legend-item"><span class="status-dot dot-notoptout"></span>NOT_OPT_OUT</span>
+        <span class="legend-item"><span class="status-dot dot-pending"></span>PENDING</span>
+        <span class="legend-item"><span class="status-dot dot-expired"></span>EXPIRED</span>
+      </div>
+      <div class="table-area">
+        <div class="loading-overlay hidden" id="loading"><span class="material-icons" style="font-size:22px;margin-right:8px;animation:spin 1s linear infinite">refresh</span>Loading records…</div>
+        <div class="table-container">
+          <table class="ora-table"><thead id="thead"></thead><tbody id="tbody"></tbody></table>
+        </div>
+      </div>
+      <div class="pagination-bar">
+        <span class="page-label">Rows per page:</span>
+        <select id="page-size"><option value="10">10</option><option value="25">25</option><option value="50">50</option><option value="100" selected>100</option></select>
+        <span class="range-text" id="page-range">—</span>
+        <button class="page-btn" id="first-page">First |&lt;</button>
+        <button class="page-btn" id="prev-page">&lt; Prev</button>
+        <button class="page-btn" id="next-page">Next &gt;</button>
+        <button class="page-btn" id="last-page">&gt;| Last</button>
       </div>
     </div>
 
-    <!-- Pagination -->
-    <div class="pagination-bar">
-      <span class="page-label">Rows per page:</span>
-      <select id="page-size">
-        <option value="10">10</option>
-        <option value="25">25</option>
-        <option value="50">50</option>
-        <option value="100" selected>100</option>
-      </select>
-      <span class="range-text" id="page-range">—</span>
-      <button class="page-btn" id="first-page">First |&lt;</button>
-      <button class="page-btn" id="prev-page">&lt; Prev</button>
-      <button class="page-btn" id="next-page">Next &gt;</button>
-      <button class="page-btn" id="last-page">&gt;| Last</button>
+    <!-- ============ VIEW: DATA SUBJECT PROFILES ============ -->
+    <div class="view-panel" id="view-profiles">
+      <div class="view-tabs">
+        <div class="vtab active">Data Subjects</div>
+        <div class="vtab">Schema</div>
+      </div>
+      <div class="filter-bar">
+        <input type="text" id="ds-filter" placeholder="Search data subjects..."/>
+        <span class="spacer"></span>
+        <span id="ds-count" style="color:var(--text-sec);font-size:13px">—</span>
+      </div>
+      <div class="table-area">
+        <div class="table-container">
+          <table class="ora-table"><thead id="ds-thead"></thead><tbody id="ds-tbody"></tbody></table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ VIEW: JOURNEY DETAIL ============ -->
+    <div class="view-panel" id="view-journey">
+      <div class="view-tabs">
+        <div class="vtab active" id="journey-tab-label">Journey Contacts</div>
+      </div>
+      <div style="padding:16px 20px;display:flex;align-items:center;gap:12px;background:#fff;border-bottom:1px solid var(--border);flex-shrink:0">
+        <span id="journey-detail-icon" class="material-icons" style="font-size:28px;color:var(--oracle-red)">email</span>
+        <div>
+          <div id="journey-detail-name" style="font-size:16px;font-weight:600"></div>
+          <div id="journey-detail-channel" style="font-size:12px;color:var(--text-sec)"></div>
+        </div>
+        <div style="margin-left:auto">
+          <button class="ora-btn" id="clear-journey-btn"><span class="material-icons" style="font-size:14px">delete_sweep</span>Clear Journey</button>
+        </div>
+      </div>
+      <div class="table-area">
+        <div class="table-container" style="padding:0 20px 20px">
+          <table class="journey-contacts-table" id="journey-contacts-table">
+            <thead><tr><th>#</th><th>Data Subject</th><th>Added At</th></tr></thead>
+            <tbody id="journey-contacts-tbody"></tbody>
+          </table>
+        </div>
+      </div>
     </div>
 
     <!-- Bottom Bar -->
@@ -437,332 +398,343 @@ pre.compact { white-space: pre-wrap; margin: 0; font-family: var(--mono); font-s
       <div class="bb-item"><span class="material-icons">storage</span> Record Count: <strong id="record-count" style="margin-left:4px">—</strong></div>
       <div class="bb-item"><span class="material-icons">schedule</span> Last Refreshed: <strong id="last-refreshed" style="margin-left:4px">—</strong></div>
     </div>
-
   </main>
 </div>
 
 <!-- ===== SETTINGS MODAL ===== -->
 <div class="modal-overlay hidden" id="settings-modal">
   <div class="modal-box">
-    <h3>⚙️ Configuration</h3>
-    <label for="url-endpoint">API URL Endpoint</label>
-    <input type="text" id="url-endpoint" placeholder="Enter API URL"
-      value="https://default9d1d17d8372b4b23a9fc1e5d895c89.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/a3eaffa116ac4c0cb3d7d5dc86724a8f/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=W5X3nvYDfsc1yBZYsz6SEYNA5ZfmZf4wODLLXHMyaO4"/>
-    <label for="username-input">Username</label>
-    <input type="text" id="username-input" placeholder="Enter username" value="alvaro.barrosomato@onetrust.com"/>
-    <div class="modal-actions">
+    <div class="modal-header"><span class="material-icons">settings</span> Configuration</div>
+    <div class="modal-body">
+      <label for="url-endpoint">API URL Endpoint</label>
+      <input type="text" id="url-endpoint" placeholder="Enter API URL"
+        value="https://default9d1d17d8372b4b23a9fc1e5d895c89.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/a3eaffa116ac4c0cb3d7d5dc86724a8f/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=W5X3nvYDfsc1yBZYsz6SEYNA5ZfmZf4wODLLXHMyaO4"/>
+      <label for="username-input">Username</label>
+      <input type="text" id="username-input" placeholder="Enter username" value="alvaro.barrosomato@onetrust.com"/>
+    </div>
+    <div class="modal-footer">
       <button class="ora-btn" id="settings-cancel">Cancel</button>
       <button class="ora-btn primary" id="settings-save">Save &amp; Close</button>
     </div>
   </div>
 </div>
 
+<!-- ===== JOURNEY MODAL ===== -->
+<div class="modal-overlay hidden" id="journey-modal">
+  <div class="modal-box" style="max-width:560px">
+    <div class="modal-header"><span class="material-icons">route</span> <span id="jm-title">Add to Journey</span></div>
+    <div class="modal-body" id="jm-body"></div>
+    <div class="modal-footer" id="jm-footer"></div>
+  </div>
+</div>
+
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-  // === DOM refs ===
-  const urlInput      = document.getElementById('url-endpoint');
-  const userInput     = document.getElementById('username-input');
-  const refreshBtn    = document.getElementById('refresh-btn');
-  const filterText    = document.getElementById('filter-text');
-  const filterConsent = document.getElementById('filter-consent');
-  const clearBtn      = document.getElementById('clear-filters');
-  const exportBtn     = document.getElementById('export-csv');
-  const exportTop     = document.getElementById('export-top');
-  const thead         = document.getElementById('thead');
-  const tbody         = document.getElementById('tbody');
-  const pageSizeSel   = document.getElementById('page-size');
-  const pageRange     = document.getElementById('page-range');
-  const firstBtn      = document.getElementById('first-page');
-  const prevBtn       = document.getElementById('prev-page');
-  const nextBtn       = document.getElementById('next-page');
-  const lastBtn       = document.getElementById('last-page');
-  const loadingEl     = document.getElementById('loading');
-  const recordCount   = document.getElementById('record-count');
-  const lastRefreshed = document.getElementById('last-refreshed');
-  const settingsModal = document.getElementById('settings-modal');
-  const settingsBtn   = document.getElementById('settings-btn');
-  const settingsSave  = document.getElementById('settings-save');
-  const settingsCancel= document.getElementById('settings-cancel');
+  // === DOM ===
+  const urlInput=document.getElementById('url-endpoint'), userInput=document.getElementById('username-input');
+  const refreshBtn=document.getElementById('refresh-btn');
+  const filterText=document.getElementById('filter-text'), filterConsent=document.getElementById('filter-consent');
+  const clearBtn=document.getElementById('clear-filters'), exportBtn=document.getElementById('export-csv'), exportTop=document.getElementById('export-top');
+  const thead=document.getElementById('thead'), tbody=document.getElementById('tbody');
+  const pageSizeSel=document.getElementById('page-size'), pageRange=document.getElementById('page-range');
+  const firstBtn=document.getElementById('first-page'), prevBtn=document.getElementById('prev-page');
+  const nextBtn=document.getElementById('next-page'), lastBtn=document.getElementById('last-page');
+  const loadingEl=document.getElementById('loading');
+  const recordCount=document.getElementById('record-count'), lastRefreshed=document.getElementById('last-refreshed');
+  const settingsModal=document.getElementById('settings-modal');
+  const journeyModal=document.getElementById('journey-modal');
+  const jmTitle=document.getElementById('jm-title'), jmBody=document.getElementById('jm-body'), jmFooter=document.getElementById('jm-footer');
+  const dsTbody=document.getElementById('ds-tbody'), dsThead=document.getElementById('ds-thead');
+  const dsFilter=document.getElementById('ds-filter'), dsCount=document.getElementById('ds-count');
+  const bcCurrent=document.getElementById('bc-current'), contentTitle=document.getElementById('content-title');
 
-  const COLUMN_ORDER = ['ItemInternalId','SUBJECT_ID','PURPOSE_NAME','CONSENT_TYPE','PREFERENCES','UPDATED_AT'];
+  const COLUMN_ORDER=['ItemInternalId','SUBJECT_ID','PURPOSE_NAME','CONSENT_TYPE','PREFERENCES','UPDATED_AT'];
 
-  let allRows  = [];
-  let baseRows = [];
-  let filtered = [];
-  let pageIndex = 0;
+  const JOURNEYS=[
+    {name:'Email Marketing Journey',channel:'Email',icon:'email',color:'#1a73e8'},
+    {name:'SMS Engagement Journey',channel:'SMS',icon:'sms',color:'#e8710a'},
+    {name:'Push Notification Journey',channel:'Push Notifications',icon:'notifications_active',color:'#9334e6'},
+    {name:'WhatsApp Campaign',channel:'WhatsApp',icon:'chat',color:'#25d366'},
+    {name:'Direct Mail Journey',channel:'Direct Mail',icon:'markunread_mailbox',color:'#795548'}
+  ];
 
-  // Persist settings
-  try {
-    const u = localStorage.getItem('ora_apiUrl');
-    const n = localStorage.getItem('ora_username');
-    if (u) urlInput.value = u;
-    if (n) userInput.value = n;
-  } catch {}
+  let allRows=[], baseRows=[], filtered=[], pageIndex=0;
+  let groupedSubjects=new Map(); // key=subjectLower, value={subject, rows, channels}
+  let journeyContacts=JOURNEYS.map(()=>[]); // array of arrays of {subject, addedAt}
+  let activeView='consents', activeJourneyIdx=null;
 
-  // URL param: ?username=xxx
-  function getUsernameFromUrl() {
-    try {
-      const params = new URLSearchParams(window.location.search);
-      return (params.get('username') || '').trim();
-    } catch { return ''; }
+  // Persist
+  try{const u=localStorage.getItem('ora_apiUrl'),n=localStorage.getItem('ora_username');if(u)urlInput.value=u;if(n)userInput.value=n;}catch{}
+
+  function getUsernameFromUrl(){try{return(new URLSearchParams(location.search).get('username')||'').trim();}catch{return'';}}
+  function esc(s){return String(s??'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#39;');}
+  function sanitizeHtml(u){const t=document.implementation.createHTMLDocument('');t.body.innerHTML=u;t.body.querySelectorAll('script,style').forEach(n=>n.remove());t.body.querySelectorAll('*').forEach(el=>{[...el.attributes].forEach(a=>{const n=a.name.toLowerCase(),v=(a.value||'').trim().toLowerCase();if(n.startsWith('on'))el.removeAttribute(a.name);if((n==='href'||n==='src')&&v.startsWith('javascript:'))el.removeAttribute(a.name);});});return t.body.innerHTML;}
+
+  const CONSENT_DOT={'ACTIVE':'dot-active','WITHDRAWN':'dot-withdrawn','NOT_OPT_OUT':'dot-notoptout','PENDING':'dot-pending','EXPIRED':'dot-expired'};
+  function consentCell(r){const v=String(r||'').toUpperCase(),c=CONSENT_DOT[v]||'';return`<span class="status-dot ${c}" style="margin-right:6px"></span>${esc(v)}`;}
+  function fmtDate(iso){if(!iso)return'';const d=new Date(iso);return isNaN(d)?esc(iso):d.toLocaleString(undefined,{year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'});}
+
+  function parsePrefs(v){if(v==null||v==='')return[];if(Array.isArray(v))return v;if(typeof v==='object')return v;const s=String(v).trim();if(!s)return[];try{const p=JSON.parse(s);return Array.isArray(p)?p:[p];}catch{return String(v);}}
+  function renderPreferencesCell(v){
+    const p=parsePrefs(v);
+    if(typeof p==='string')return`<pre class="compact">${esc(p)}</pre>`;
+    if(Array.isArray(p)&&!p.length)return'[]';
+    if(Array.isArray(p)){let h='';for(const pref of p){const t=esc(pref?.name??pref?.guid??'Preference');h+=`<div style="margin-bottom:4px"><div style="font-weight:600;font-size:12px">${t}</div>`;if(Array.isArray(pref?.options)&&pref.options.length){h+='<div>';for(const o of pref.options){const on=String(o?.value).toLowerCase()==='true';h+=`<span class="chip ${on?'on':'off'}">${esc(o?.name??'')}: ${on?'On':'Off'}</span>`;}h+='</div>';}h+='</div>';}return h;}
+    return`<pre class="compact">${esc(JSON.stringify(p,null,2))}</pre>`;
   }
 
-  // === Utility functions ===
-  function escapeHtml(s) {
-    return String(s ?? '')
-      .replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;')
-      .replaceAll('"', '&quot;').replaceAll("'", '&#39;');
+  // === Build grouped subjects ===
+  function buildGrouped(){
+    groupedSubjects=new Map();
+    for(const row of baseRows){
+      const key=String(row.SUBJECT_ID||'').toLowerCase();
+      if(!key)continue;
+      if(!groupedSubjects.has(key))groupedSubjects.set(key,{subject:row.SUBJECT_ID,rows:[],channels:new Map()});
+      const g=groupedSubjects.get(key);
+      g.rows.push(row);
+      // Consolidate channel prefs
+      const prefs=parsePrefs(row.PREFERENCES);
+      if(Array.isArray(prefs)){for(const pref of prefs){if(Array.isArray(pref?.options)){for(const opt of pref.options){const cn=(opt?.name||'').trim();if(cn){const on=String(opt?.value).toLowerCase()==='true';if(!g.channels.has(cn)||on)g.channels.set(cn,on);}}}}}
+    }
   }
 
-  function sanitizeHtml(unsafeHtml) {
-    const tmp = document.implementation.createHTMLDocument('');
-    tmp.body.innerHTML = unsafeHtml;
-    tmp.body.querySelectorAll('script, style').forEach(n => n.remove());
-    tmp.body.querySelectorAll('*').forEach(el => {
-      [...el.attributes].forEach(attr => {
-        const name = attr.name.toLowerCase();
-        const val = (attr.value || '').trim().toLowerCase();
-        if (name.startsWith('on')) el.removeAttribute(attr.name);
-        if ((name === 'href' || name === 'src') && val.startsWith('javascript:'))
-          el.removeAttribute(attr.name);
-      });
+  // Check if subject has channel consent
+  function hasChannelConsent(subjectKey, channel){
+    const g=groupedSubjects.get(subjectKey.toLowerCase());
+    if(!g)return{found:false,on:false,detail:'No data found for this subject'};
+    const ch=channel.toLowerCase();
+    for(const[name,val] of g.channels){
+      if(name.toLowerCase().includes(ch)||ch.includes(name.toLowerCase())){
+        return{found:true,on:val,detail:`${name}: ${val?'On':'Off'}`};
+      }
+    }
+    return{found:false,on:false,detail:`No preference found matching "${channel}"`};
+  }
+
+  // === Consents view (flat table) ===
+  function buildHeader(){thead.innerHTML=`<tr><th class="col-row">Row</th>${COLUMN_ORDER.map(h=>`<th>${esc(h)}</th>`).join('')}</tr>`;}
+  function showLoading(s){loadingEl.classList.toggle('hidden',!s);}
+  function showMessage(m){buildHeader();tbody.innerHTML=`<tr><td colspan="${COLUMN_ORDER.length+1}" style="padding:20px;color:var(--text-sec)">${esc(m)}</td></tr>`;pageRange.textContent='\u2014';recordCount.textContent='\u2014';}
+
+  function renderPage(){
+    const size=parseInt(pageSizeSel.value,10)||100,total=filtered.length;
+    const pages=Math.max(1,Math.ceil(total/size));
+    if(pageIndex>pages-1)pageIndex=Math.max(0,pages-1);
+    const start=pageIndex*size,end=Math.min(start+size,total),rows=filtered.slice(start,end);
+    let h='';
+    for(let i=0;i<rows.length;i++){const r=rows[i];h+=`<tr><td class="cell-row">${start+i+1}</td>`;for(const k of COLUMN_ORDER){switch(k){case'CONSENT_TYPE':h+=`<td>${consentCell(r[k])}</td>`;break;case'PREFERENCES':h+=`<td>${renderPreferencesCell(r[k])}</td>`;break;case'UPDATED_AT':h+=`<td>${fmtDate(r[k])}</td>`;break;case'ItemInternalId':case'SUBJECT_ID':h+=`<td class="cell-mono">${esc(r[k]??'')}</td>`;break;default:h+=`<td>${esc(r[k]??'')}</td>`;}}h+='</tr>';}
+    tbody.innerHTML=h||`<tr><td colspan="${COLUMN_ORDER.length+1}" style="padding:20px;color:var(--text-sec)">No records</td></tr>`;
+    pageRange.textContent=total?`Showing ${start+1} - ${end} of ${total} records`:'No records';
+    recordCount.textContent=String(total);
+    firstBtn.disabled=pageIndex===0;prevBtn.disabled=pageIndex===0;nextBtn.disabled=pageIndex>=pages-1||!total;lastBtn.disabled=pageIndex>=pages-1||!total;
+  }
+  function applyFilters(){
+    const q=(filterText.value||'').trim().toLowerCase(),st=(filterConsent.value||'').trim().toUpperCase();
+    filtered=baseRows.filter(r=>{let ok=true;if(q){const h=k=>String(r[k]??'').toLowerCase().includes(q);ok=h('SUBJECT_ID')||h('PURPOSE_NAME');}if(ok&&st)ok=String(r.CONSENT_TYPE||'').toUpperCase()===st;return ok;});
+    filtered.sort((a,b)=>new Date(b.UPDATED_AT||0)-new Date(a.UPDATED_AT||0));
+    pageIndex=0;renderPage();
+  }
+
+  // === DataSubjectProfiles view ===
+  function renderProfiles(){
+    dsThead.innerHTML='<tr><th>Data Subject</th><th>Purposes</th><th>Consent Status</th><th>Channel Preferences</th><th style="width:160px">Actions</th></tr>';
+    const q=(dsFilter.value||'').trim().toLowerCase();
+    let entries=[...groupedSubjects.entries()];
+    if(q)entries=entries.filter(([k])=>k.includes(q));
+    dsCount.textContent=`Showing ${entries.length} data subject${entries.length!==1?'s':''}`;
+    if(!entries.length){dsTbody.innerHTML='<tr><td colspan="5" style="padding:20px;color:var(--text-sec)">No data subjects found</td></tr>';return;}
+    let h='';
+    for(const[key,g] of entries){
+      // Purposes
+      const purposes=[...new Set(g.rows.map(r=>r.PURPOSE_NAME).filter(Boolean))];
+      const purposeHtml=purposes.map(p=>`<span class="chip purpose">${esc(p)}</span>`).join('');
+      // Consent statuses
+      const statuses={};g.rows.forEach(r=>{const s=String(r.CONSENT_TYPE||'').toUpperCase();if(s)statuses[s]=(statuses[s]||0)+1;});
+      const statusHtml=Object.entries(statuses).map(([s,c])=>`<span style="display:inline-flex;align-items:center;gap:3px;margin-right:8px"><span class="status-dot ${CONSENT_DOT[s]||''}"></span>${esc(s)} (${c})</span>`).join('');
+      // Channels
+      let chHtml='';
+      for(const[cn,on] of g.channels){
+        chHtml+=`<span class="channel-chip ${on?'on':'off'}"><span class="material-icons">${on?'check_circle':'cancel'}</span>${esc(cn)}</span>`;
+      }
+      if(!g.channels.size)chHtml='<span style="color:var(--text-hint)">No preferences</span>';
+      h+=`<tr>
+        <td class="cell-mono" style="font-weight:600">${esc(g.subject)}</td>
+        <td>${purposeHtml||'—'}</td>
+        <td>${statusHtml||'—'}</td>
+        <td><div class="ds-channels">${chHtml}</div></td>
+        <td><button class="ora-btn outline-red" onclick="openJourneyModal('${esc(key)}')"><span class="material-icons" style="font-size:14px">route</span>Add to Journey</button></td>
+      </tr>`;
+    }
+    dsTbody.innerHTML=h;
+  }
+
+  // === Journey detail view ===
+  function renderJourneyDetail(idx){
+    const j=JOURNEYS[idx],contacts=journeyContacts[idx];
+    document.getElementById('journey-detail-icon').textContent=j.icon;
+    document.getElementById('journey-detail-name').textContent=j.name;
+    document.getElementById('journey-detail-channel').textContent=`Channel: ${j.channel}`;
+    document.getElementById('journey-tab-label').textContent=j.name+' — Contacts';
+    const tb=document.getElementById('journey-contacts-tbody');
+    if(!contacts.length){tb.innerHTML='<tr><td colspan="3" style="padding:16px;color:var(--text-sec)">No contacts added to this journey yet.</td></tr>';return;}
+    tb.innerHTML=contacts.map((c,i)=>`<tr><td>${i+1}</td><td class="cell-mono">${esc(c.subject)}</td><td>${esc(c.addedAt)}</td></tr>`).join('');
+  }
+  function updateBadges(){
+    JOURNEYS.forEach((_,i)=>{const b=document.getElementById('jbadge-'+i),c=journeyContacts[i].length;b.textContent=String(c);b.classList.toggle('hidden',c===0);});
+  }
+
+  // === Journey Modal ===
+  window.openJourneyModal=function(subjectKey){
+    const g=groupedSubjects.get(subjectKey);
+    if(!g)return;
+    jmTitle.textContent=`Add ${g.subject} to Journey`;
+    // Build journey tiles
+    let tiles='<p style="margin-bottom:12px;color:var(--text-sec)">Select a journey to add this contact:</p><div class="journey-grid">';
+    JOURNEYS.forEach((j,i)=>{
+      tiles+=`<div class="journey-tile" onclick="selectJourney('${subjectKey}',${i})">
+        <div class="j-icon" style="background:${j.color}22;color:${j.color}"><span class="material-icons">${j.icon}</span></div>
+        <div class="j-info"><div class="j-name">${esc(j.name)}</div><div class="j-channel">Channel: ${esc(j.channel)}</div></div>
+      </div>`;
     });
-    return tmp.body.innerHTML;
-  }
-
-  const CONSENT_DOT = {
-    'ACTIVE':      'dot-active',
-    'WITHDRAWN':   'dot-withdrawn',
-    'NOT_OPT_OUT': 'dot-notoptout',
-    'PENDING':     'dot-pending',
-    'EXPIRED':     'dot-expired'
+    tiles+='</div>';
+    jmBody.innerHTML=tiles;
+    jmFooter.innerHTML='<button class="ora-btn" onclick="closeJourneyModal()">Cancel</button>';
+    journeyModal.classList.remove('hidden');
   };
 
-  function consentCell(raw) {
-    const v = String(raw || '').toUpperCase();
-    const cls = CONSENT_DOT[v] || '';
-    return `<span class="status-dot ${cls}" style="margin-right:6px"></span>${escapeHtml(v)}`;
-  }
+  window.selectJourney=function(subjectKey, jIdx){
+    const j=JOURNEYS[jIdx], g=groupedSubjects.get(subjectKey);
+    const check=hasChannelConsent(subjectKey, j.channel);
 
-  function fmtDateLocal(iso) {
-    if (!iso) return '';
-    const d = new Date(iso);
-    return isNaN(d) ? escapeHtml(iso)
-      : d.toLocaleString(undefined, { year:'numeric', month:'2-digit', day:'2-digit', hour:'2-digit', minute:'2-digit' });
-  }
-
-  function parsePrefs(value) {
-    if (value == null || value === '') return [];
-    if (Array.isArray(value)) return value;
-    if (typeof value === 'object') return value;
-    const s = String(value).trim();
-    if (!s) return [];
-    try { const parsed = JSON.parse(s); return Array.isArray(parsed) ? parsed : [parsed]; }
-    catch { return String(value); }
-  }
-
-  function renderPreferencesCell(value) {
-    const parsed = parsePrefs(value);
-    if (typeof parsed === 'string') return `<pre class="compact">${escapeHtml(parsed)}</pre>`;
-    if (Array.isArray(parsed) && parsed.length === 0) return '[]';
-    if (Array.isArray(parsed)) {
-      let html = '';
-      for (const pref of parsed) {
-        const title = escapeHtml(pref?.name ?? pref?.guid ?? 'Preference');
-        html += `<div style="margin-bottom:4px"><div style="font-weight:600;font-size:12px">${title}</div>`;
-        if (Array.isArray(pref?.options) && pref.options.length) {
-          html += `<div>`;
-          for (const opt of pref.options) {
-            const on = String(opt?.value).toLowerCase() === 'true';
-            html += `<span class="chip ${on ? 'on' : ''}">${escapeHtml(opt?.name ?? '')}: ${on ? 'On' : 'Off'}</span>`;
-          }
-          html += `</div>`;
-        }
-        html += `</div>`;
+    if(check.found && check.on){
+      // SUCCESS
+      if(!journeyContacts[jIdx].some(c=>c.subject.toLowerCase()===subjectKey)){
+        journeyContacts[jIdx].push({subject:g.subject, addedAt:new Date().toLocaleString()});
+        updateBadges();
       }
-      return html;
+      jmBody.innerHTML=`<div class="result-card success">
+        <div class="r-icon"><span class="material-icons" style="font-size:48px">check_circle</span></div>
+        <div class="r-title">Contact successfully added to ${esc(j.name)}</div>
+        <div class="r-sub">Consent verified: <strong>${esc(j.channel)}</strong> preference is active.</div>
+        <div class="r-detail">${esc(check.detail)}</div>
+      </div>`;
+      jmFooter.innerHTML='<button class="ora-btn primary" onclick="closeJourneyModal()">Done</button>';
+    } else {
+      // BLOCKED
+      jmBody.innerHTML=`<div class="result-card error">
+        <div class="r-icon"><span class="material-icons" style="font-size:48px">gpp_bad</span></div>
+        <div class="r-title">Cannot add contact to ${esc(j.name)}</div>
+        <div class="r-sub">Consent not present: <strong>${esc(j.channel)}</strong> preference is not active or not found.</div>
+        <div class="r-detail">${esc(check.detail)}</div>
+      </div>`;
+      jmFooter.innerHTML='<button class="ora-btn" onclick="closeJourneyModal()">Close</button><button class="ora-btn outline-red" onclick="closeJourneyModal()"><span class="material-icons" style="font-size:14px">mail_outline</span>Request Consent</button>';
     }
-    return `<pre class="compact">${escapeHtml(JSON.stringify(parsed, null, 2))}</pre>`;
-  }
+  };
 
-  // === Table rendering ===
-  function buildHeader() {
-    thead.innerHTML = `<tr><th class="col-row">Row</th>${COLUMN_ORDER.map(h => `<th>${escapeHtml(h)}</th>`).join('')}</tr>`;
-  }
+  window.closeJourneyModal=function(){journeyModal.classList.add('hidden');};
 
-  function showLoading(show) { loadingEl.classList.toggle('hidden', !show); }
-
-  function showMessage(msg) {
-    buildHeader();
-    tbody.innerHTML = `<tr><td colspan="${COLUMN_ORDER.length + 1}" style="padding:20px;color:var(--text-sec)">${escapeHtml(msg)}</td></tr>`;
-    pageRange.textContent = '\u2014';
-    recordCount.textContent = '\u2014';
-  }
-
-  function renderPage() {
-    const size  = parseInt(pageSizeSel.value, 10) || 100;
-    const total = filtered.length;
-    const pages = Math.max(1, Math.ceil(total / size));
-    if (pageIndex > pages - 1) pageIndex = Math.max(0, pages - 1);
-    const start = pageIndex * size;
-    const end   = Math.min(start + size, total);
-    const rows  = filtered.slice(start, end);
-
-    let html = '';
-    for (let i = 0; i < rows.length; i++) {
-      const r = rows[i];
-      html += `<tr><td class="cell-row">${start + i + 1}</td>`;
-      for (const key of COLUMN_ORDER) {
-        switch (key) {
-          case 'CONSENT_TYPE':  html += `<td>${consentCell(r[key])}</td>`; break;
-          case 'PREFERENCES':   html += `<td>${renderPreferencesCell(r[key])}</td>`; break;
-          case 'UPDATED_AT':    html += `<td>${fmtDateLocal(r[key])}</td>`; break;
-          case 'ItemInternalId':
-          case 'SUBJECT_ID':    html += `<td class="cell-mono">${escapeHtml(r[key] ?? '')}</td>`; break;
-          default:              html += `<td>${escapeHtml(r[key] ?? '')}</td>`;
-        }
-      }
-      html += `</tr>`;
-    }
-    tbody.innerHTML = html || `<tr><td colspan="${COLUMN_ORDER.length + 1}" style="padding:20px;color:var(--text-sec)">No records found</td></tr>`;
-
-    pageRange.textContent = total ? `Showing ${start + 1} - ${end} of ${total} records` : 'No records';
-    recordCount.textContent = String(total);
-    firstBtn.disabled = pageIndex === 0;
-    prevBtn.disabled  = pageIndex === 0;
-    nextBtn.disabled  = pageIndex >= pages - 1 || total === 0;
-    lastBtn.disabled  = pageIndex >= pages - 1 || total === 0;
-  }
-
-  function applyFilters() {
-    const q      = (filterText.value || '').trim().toLowerCase();
-    const status = (filterConsent.value || '').trim().toUpperCase();
-    filtered = baseRows.filter(r => {
-      let ok = true;
-      if (q) {
-        const has = k => String(r[k] ?? '').toLowerCase().includes(q);
-        ok = has('SUBJECT_ID') || has('PURPOSE_NAME');
-      }
-      if (ok && status) ok = String(r.CONSENT_TYPE || '').toUpperCase() === status;
-      return ok;
+  // === View switching ===
+  function switchView(view, journeyIdx){
+    activeView=view; activeJourneyIdx=journeyIdx??null;
+    document.querySelectorAll('.sidebar-item[data-view]').forEach(el=>{
+      const v=el.dataset.view, ji=el.dataset.journey;
+      const isActive=(v===view&&(v!=='journey'||ji==String(journeyIdx)));
+      el.classList.toggle('active',isActive);
     });
-    filtered.sort((a, b) => new Date(b.UPDATED_AT || 0) - new Date(a.UPDATED_AT || 0));
-    pageIndex = 0;
-    renderPage();
+    document.querySelectorAll('.view-panel').forEach(p=>p.classList.remove('active'));
+    if(view==='consents'){
+      document.getElementById('view-consents').classList.add('active');
+      bcCurrent.textContent='Consents'; contentTitle.textContent='Consents';
+    } else if(view==='profiles'){
+      document.getElementById('view-profiles').classList.add('active');
+      bcCurrent.textContent='DataSubjectProfiles'; contentTitle.textContent='DataSubjectProfiles';
+      renderProfiles();
+    } else if(view==='journey'&&journeyIdx!=null){
+      document.getElementById('view-journey').classList.add('active');
+      const j=JOURNEYS[journeyIdx];
+      bcCurrent.textContent=j.name; contentTitle.textContent=j.name;
+      renderJourneyDetail(journeyIdx);
+    }
   }
+
+  // Sidebar clicks
+  document.getElementById('sidebar').addEventListener('click',e=>{
+    const item=e.target.closest('.sidebar-item[data-view]');
+    if(!item)return;
+    const v=item.dataset.view;
+    if(v==='journey'){switchView('journey',parseInt(item.dataset.journey,10));}
+    else{switchView(v);}
+  });
+
+  // Clear journey
+  document.getElementById('clear-journey-btn').addEventListener('click',()=>{
+    if(activeJourneyIdx!=null){journeyContacts[activeJourneyIdx]=[];updateBadges();renderJourneyDetail(activeJourneyIdx);}
+  });
 
   // === CSV ===
-  function csvVal(v) {
-    const s = String(v ?? '');
-    return (s.includes('"') || s.includes(',') || s.includes('\n')) ? `"${s.replaceAll('"','""')}"` : s;
-  }
-  function toCsv(rows) {
-    if (!rows.length) return '';
-    const head = COLUMN_ORDER.join(',');
-    const lines = rows.map(r => COLUMN_ORDER.map(h =>
-      csvVal(h === 'PREFERENCES' ? (typeof r[h] === 'string' ? r[h] : JSON.stringify(r[h] ?? '')) : (r[h] ?? ''))
-    ).join(','));
-    return [head, ...lines].join('\n');
-  }
-  function downloadFile(filename, text) {
-    const blob = new Blob([text], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a'); a.href = url; a.download = filename;
-    document.body.appendChild(a); a.click(); document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-  }
+  function csvVal(v){const s=String(v??'');return(s.includes('"')||s.includes(',')||s.includes('\n'))?`"${s.replaceAll('"','""')}"`:s;}
+  function toCsv(rows){if(!rows.length)return'';const h=COLUMN_ORDER.join(',');const l=rows.map(r=>COLUMN_ORDER.map(k=>csvVal(k==='PREFERENCES'?(typeof r[k]==='string'?r[k]:JSON.stringify(r[k]??'')):r[k]??'')).join(','));return[h,...l].join('\n');}
+  function downloadFile(fn,txt){const b=new Blob([txt],{type:'text/csv;charset=utf-8;'});const u=URL.createObjectURL(b);const a=document.createElement('a');a.href=u;a.download=fn;document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(u);}
 
-  // === Data fetch ===
-  async function refreshResults() {
-    try {
-      const apiUrl   = (urlInput?.value || '').trim();
-      const username = (userInput?.value || '').trim();
-      if (!apiUrl) { showMessage('Please configure the API URL in Settings (\u2699\ufe0f).'); return; }
-
-      showLoading(true); buildHeader();
-      try { localStorage.setItem('ora_apiUrl', apiUrl); localStorage.setItem('ora_username', username); } catch {}
-
-      const url = new URL(apiUrl);
-      if (username) url.searchParams.set('username', username);
-
-      const res = await fetch(url.toString(), { method: 'GET', headers: { 'Accept': 'application/json, text/html;q=0.9' } });
-      if (!res.ok) throw new Error(`HTTP ${res.status}: ${res.statusText}`);
-
-      const ct = (res.headers.get('content-type') || '').toLowerCase();
-      if (ct.includes('application/json')) {
-        const data = await res.json();
-        allRows = (Array.isArray(data) ? data : (Array.isArray(data?.rows) ? data.rows : []))
-          .map(r => { const { ['@odata.etag']: _omit, ...rest } = r || {}; return rest || {}; });
-
-        // *** FIX: use USERNAME_EMAIL + .includes() to match working Salesforce pattern ***
-        const urlUser = getUsernameFromUrl().toLowerCase();
-        baseRows = urlUser
-          ? allRows.filter(r => String(r.USERNAME_EMAIL || '').toLowerCase().includes(urlUser))
-          : allRows.slice();
-
+  // === Fetch ===
+  async function refreshResults(){
+    try{
+      const apiUrl=(urlInput?.value||'').trim(),username=(userInput?.value||'').trim();
+      if(!apiUrl){showMessage('Please configure the API URL in Settings (\u2699\ufe0f).');return;}
+      showLoading(true);buildHeader();
+      try{localStorage.setItem('ora_apiUrl',apiUrl);localStorage.setItem('ora_username',username);}catch{}
+      const url=new URL(apiUrl);
+      if(username)url.searchParams.set('username',username);
+      const res=await fetch(url.toString(),{method:'GET',headers:{'Accept':'application/json, text/html;q=0.9'}});
+      if(!res.ok)throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+      const ct=(res.headers.get('content-type')||'').toLowerCase();
+      if(ct.includes('application/json')){
+        const data=await res.json();
+        allRows=(Array.isArray(data)?data:(Array.isArray(data?.rows)?data.rows:[]))
+          .map(r=>{const{'@odata.etag':_,...rest}=r||{};return rest||{};});
+        const urlUser=getUsernameFromUrl().toLowerCase();
+        baseRows=urlUser?allRows.filter(r=>String(r.USERNAME_EMAIL||'').toLowerCase().includes(urlUser)):allRows.slice();
+        buildGrouped();
         applyFilters();
-        lastRefreshed.textContent = new Date().toLocaleString();
-      } else {
-        const html = await res.text();
-        tbody.innerHTML = `<tr><td colspan="${COLUMN_ORDER.length + 1}">${sanitizeHtml(html)}</td></tr>`;
-        pageRange.textContent = '\u2014'; recordCount.textContent = '\u2014';
+        if(activeView==='profiles')renderProfiles();
+        lastRefreshed.textContent=new Date().toLocaleString();
+      }else{
+        const html=await res.text();
+        tbody.innerHTML=`<tr><td colspan="${COLUMN_ORDER.length+1}">${sanitizeHtml(html)}</td></tr>`;
+        pageRange.textContent='\u2014';recordCount.textContent='\u2014';
       }
-    } catch (e) {
+    }catch(e){
       buildHeader();
-      tbody.innerHTML = `<tr><td colspan="${COLUMN_ORDER.length + 1}" style="padding:20px;color:var(--status-withdrawn)">Failed to load records. ${escapeHtml(e.message)}</td></tr>`;
-      pageRange.textContent = '\u2014'; recordCount.textContent = '\u2014';
-      console.error(e);
-    } finally { showLoading(false); }
+      tbody.innerHTML=`<tr><td colspan="${COLUMN_ORDER.length+1}" style="padding:20px;color:var(--status-withdrawn)">Failed to load records. ${esc(e.message)}</td></tr>`;
+      pageRange.textContent='\u2014';recordCount.textContent='\u2014';console.error(e);
+    }finally{showLoading(false);}
   }
 
   // === Events ===
-  refreshBtn.addEventListener('click', refreshResults);
-  filterText.addEventListener('input', applyFilters);
-  filterConsent.addEventListener('change', applyFilters);
-  clearBtn.addEventListener('click', () => { filterText.value = ''; filterConsent.value = ''; applyFilters(); });
-  pageSizeSel.addEventListener('change', () => { pageIndex = 0; renderPage(); });
-  firstBtn.addEventListener('click', () => { pageIndex = 0; renderPage(); });
-  prevBtn.addEventListener('click', () => { pageIndex = Math.max(0, pageIndex - 1); renderPage(); });
-  nextBtn.addEventListener('click', () => {
-    const size = parseInt(pageSizeSel.value, 10) || 100;
-    const pages = Math.max(1, Math.ceil(filtered.length / size));
-    pageIndex = Math.min(pages - 1, pageIndex + 1); renderPage();
-  });
-  lastBtn.addEventListener('click', () => {
-    const size = parseInt(pageSizeSel.value, 10) || 100;
-    const pages = Math.max(1, Math.ceil(filtered.length / size));
-    pageIndex = pages - 1; renderPage();
-  });
+  refreshBtn.addEventListener('click',refreshResults);
+  filterText.addEventListener('input',applyFilters);
+  filterConsent.addEventListener('change',applyFilters);
+  clearBtn.addEventListener('click',()=>{filterText.value='';filterConsent.value='';applyFilters();});
+  pageSizeSel.addEventListener('change',()=>{pageIndex=0;renderPage();});
+  firstBtn.addEventListener('click',()=>{pageIndex=0;renderPage();});
+  prevBtn.addEventListener('click',()=>{pageIndex=Math.max(0,pageIndex-1);renderPage();});
+  nextBtn.addEventListener('click',()=>{const s=parseInt(pageSizeSel.value,10)||100;const p=Math.max(1,Math.ceil(filtered.length/s));pageIndex=Math.min(p-1,pageIndex+1);renderPage();});
+  lastBtn.addEventListener('click',()=>{const s=parseInt(pageSizeSel.value,10)||100;const p=Math.max(1,Math.ceil(filtered.length/s));pageIndex=p-1;renderPage();});
+  dsFilter.addEventListener('input',renderProfiles);
 
-  function doExport() {
-    const csv = toCsv(filtered);
-    if (!csv) return;
-    const ts = new Date().toISOString().replace(/[:.\\-]/g, '').slice(0, 15);
-    downloadFile(`oracle-responsys-consents-${ts}.csv`, csv);
-  }
-  exportBtn.addEventListener('click', doExport);
-  exportTop.addEventListener('click', doExport);
+  function doExport(){const c=toCsv(filtered);if(!c)return;const t=new Date().toISOString().replace(/[:.\\-]/g,'').slice(0,15);downloadFile(`oracle-responsys-consents-${t}.csv`,c);}
+  exportBtn.addEventListener('click',doExport);
+  exportTop.addEventListener('click',doExport);
 
-  // Settings
-  settingsBtn.addEventListener('click', () => settingsModal.classList.remove('hidden'));
-  settingsCancel.addEventListener('click', () => settingsModal.classList.add('hidden'));
-  settingsSave.addEventListener('click', () => {
-    try { localStorage.setItem('ora_apiUrl', urlInput.value); localStorage.setItem('ora_username', userInput.value); } catch {}
-    settingsModal.classList.add('hidden');
-  });
-  settingsModal.addEventListener('click', e => { if (e.target === settingsModal) settingsModal.classList.add('hidden'); });
-
-  // View tabs (cosmetic)
-  document.querySelectorAll('.view-tabs .vtab').forEach(tab => {
-    tab.addEventListener('click', () => {
-      document.querySelectorAll('.view-tabs .vtab').forEach(t => t.classList.remove('active'));
-      tab.classList.add('active');
-    });
-  });
+  document.getElementById('settings-btn').addEventListener('click',()=>settingsModal.classList.remove('hidden'));
+  document.getElementById('settings-cancel').addEventListener('click',()=>settingsModal.classList.add('hidden'));
+  document.getElementById('settings-save').addEventListener('click',()=>{try{localStorage.setItem('ora_apiUrl',urlInput.value);localStorage.setItem('ora_username',userInput.value);}catch{}settingsModal.classList.add('hidden');});
+  settingsModal.addEventListener('click',e=>{if(e.target===settingsModal)settingsModal.classList.add('hidden');});
+  journeyModal.addEventListener('click',e=>{if(e.target===journeyModal)closeJourneyModal();});
 
   // Init
-  buildHeader();
-  showMessage('Click Refresh to load records, or configure the API endpoint in \u2699\ufe0f Settings.');
+  buildHeader();showMessage('Click Refresh to load records, or configure the API endpoint in \u2699\ufe0f Settings.');
+  updateBadges();
   refreshResults();
 });
 </script>
