@@ -1,0 +1,921 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Oracle Eloqua – OneTrust Consent Integration</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',Arial,Helvetica,sans-serif;background:#f0f1f3;color:#333;font-size:13px}
+
+/* ── Top Nav ── */
+.top-nav{background:#1a1a1a;height:46px;display:flex;align-items:center;padding:0 18px;position:sticky;top:0;z-index:200}
+.hamburger{color:#fff;font-size:18px;cursor:pointer;margin-right:16px}
+.brand{display:flex;align-items:center;gap:10px}
+.brand .oracle{color:#fff;font-size:19px;font-weight:700;letter-spacing:-.3px}
+.brand .eloqua{color:#fff;font-size:16px;font-weight:300;letter-spacing:.5px}
+.brand sup{font-size:8px;color:#ccc;vertical-align:super}
+.nav-tabs-main{display:flex;margin-left:30px;height:46px}
+.nav-tabs-main .ntab{color:#aaa;padding:0 14px;display:flex;align-items:center;font-size:12px;cursor:pointer;border-bottom:3px solid transparent;transition:.2s;gap:5px;white-space:nowrap}
+.nav-tabs-main .ntab:hover{color:#fff;background:rgba(255,255,255,.06)}
+.nav-tabs-main .ntab.active{color:#fff;border-bottom-color:#c74634}
+.nav-right{margin-left:auto;display:flex;align-items:center;gap:14px}
+.nav-right span{color:#aaa;font-size:15px;cursor:pointer}
+.nav-right span:hover{color:#fff}
+.nav-right .avatar{width:28px;height:28px;border-radius:50%;background:#c74634;color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600}
+
+/* ── Secondary Bar ── */
+.sec-bar{background:#fff;border-bottom:1px solid #ddd;height:42px;display:flex;align-items:center;padding:0 18px;gap:14px}
+.draft-badge{background:#c74634;color:#fff;font-size:10px;font-weight:700;padding:2px 8px;border-radius:2px;text-transform:uppercase;letter-spacing:.5px}
+.connected-badge{background:#00695c;color:#fff;font-size:10px;font-weight:700;padding:2px 8px;border-radius:2px}
+.sec-bar .stitle{font-size:14px;font-weight:600;color:#333}
+.sec-bar-right{margin-left:auto;display:flex;gap:10px;align-items:center}
+.btn{padding:5px 16px;border-radius:3px;font-size:12px;border:1px solid #bbb;background:#fff;color:#555;cursor:pointer;transition:.15s}
+.btn:hover{background:#f5f5f5}
+.btn-primary{background:#0572ce;color:#fff;border-color:#0572ce}
+.btn-primary:hover{background:#045ea8}
+.btn-sm{padding:3px 10px;font-size:11px}
+.btn-ot{background:#00695c;color:#fff;border-color:#00695c}
+.btn-ot:hover{background:#004d40}
+
+/* ── Layout ── */
+.main-layout{display:flex;min-height:calc(100vh - 88px)}
+.sidebar{width:230px;min-width:230px;background:#f7f8fa;border-right:1px solid #ddd;padding:14px 0;overflow-y:auto}
+.content{flex:1;padding:20px 24px;overflow-y:auto}
+.sidebar h4{font-size:10px;font-weight:700;text-transform:uppercase;color:#888;padding:8px 16px 4px;letter-spacing:.6px}
+.sidebar .sitem{padding:6px 16px 6px 20px;font-size:12px;color:#444;cursor:pointer;display:flex;align-items:center;gap:8px;transition:.12s}
+.sidebar .sitem:hover{background:#e8eaed}
+.sidebar .sitem.active{background:#dce6f0;color:#0572ce;font-weight:600}
+.sidebar .sitem .dot{width:8px;height:8px;border-radius:2px;flex-shrink:0}
+
+/* ── Cards ── */
+.card{background:#fff;border:1px solid #ddd;border-radius:4px;margin-bottom:16px}
+.card-header{padding:12px 16px;border-bottom:1px solid #eee;font-size:13px;font-weight:600;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.card-body{padding:16px}
+
+/* ── Tables ── */
+table.etable{width:100%;border-collapse:collapse;font-size:12px}
+table.etable th{background:#f7f8fa;border:1px solid #e0e0e0;padding:8px 10px;text-align:left;font-weight:600;color:#555;position:sticky;top:0}
+table.etable td{border:1px solid #e0e0e0;padding:7px 10px;color:#444}
+table.etable tr:hover td{background:#f3f7fe}
+table.etable tr.clickable{cursor:pointer}
+table.etable tr.clickable:hover td{background:#e8f0fe}
+
+/* ── Badges ── */
+.badge{display:inline-block;padding:2px 10px;border-radius:10px;font-size:11px;font-weight:600}
+.badge-green{background:#e6f4ea;color:#1e7e34}
+.badge-red{background:#fde8e8;color:#c0392b}
+.badge-blue{background:#e3f0fc;color:#0572ce}
+.badge-gray{background:#eee;color:#666}
+.badge-ot{background:#e0f2f1;color:#00695c}
+.badge-orange{background:#fef3e0;color:#e8710a}
+
+/* ── Status Dots ── */
+.sdot{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:500}
+.sdot::before{content:'';width:9px;height:9px;border-radius:50%;flex-shrink:0}
+.sdot.active::before{background:#1e8e3e}
+.sdot.withdrawn::before{background:#d93025}
+.sdot.notoptout::before{background:#1a73e8}
+.sdot.pending::before{background:#e8710a}
+.sdot.expired::before{background:#80868b}
+
+/* ── Chips ── */
+.chips{display:flex;flex-wrap:wrap;gap:4px}
+.chip{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:12px;font-size:10px;font-weight:600;background:#fde8e8;color:#c0392b}
+.chip.on{background:#e6f4ea;color:#1e8e3e}
+.chip-icon{font-size:10px}
+
+/* ── OneTrust accent ── */
+.ot-accent{color:#00695c}
+.ot-border{border-left:3px solid #00695c}
+.ot-logo-inline{display:inline-flex;align-items:center;gap:4px;background:#00695c;color:#fff;font-size:9px;font-weight:700;padding:2px 6px;border-radius:3px;letter-spacing:.3px}
+
+/* ── Field rows ── */
+.field-row{display:flex;margin-bottom:8px;align-items:center}
+.field-label{width:190px;font-size:12px;color:#777;font-weight:500;flex-shrink:0}
+.field-value{font-size:12px;color:#333;font-weight:500}
+
+/* ── Search / Filter bar ── */
+.filter-bar{display:flex;gap:10px;margin-bottom:14px;align-items:center;flex-wrap:wrap}
+.filter-bar input[type=text]{flex:1;min-width:200px;padding:7px 12px;border:1px solid #ccc;border-radius:4px;font-size:12px}
+.filter-bar select{padding:7px 10px;border:1px solid #ccc;border-radius:4px;font-size:12px;background:#fff}
+.filter-bar .count-label{font-size:12px;color:#888;margin-left:auto}
+
+/* ── Pagination ── */
+.pagination{display:flex;align-items:center;justify-content:center;gap:6px;margin-top:14px}
+.pagination button{padding:4px 10px;border:1px solid #ccc;border-radius:3px;background:#fff;font-size:11px;cursor:pointer}
+.pagination button:hover{background:#e8eaed}
+.pagination button.active{background:#0572ce;color:#fff;border-color:#0572ce}
+.pagination span{font-size:11px;color:#888}
+
+/* ── Loading ── */
+.loader{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px;color:#888}
+.spinner{width:36px;height:36px;border:3px solid #ddd;border-top-color:#00695c;border-radius:50%;animation:spin .8s linear infinite;margin-bottom:12px}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ── Back button ── */
+.back-btn{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border:1px solid #ccc;border-radius:4px;background:#fff;font-size:12px;cursor:pointer;margin-bottom:16px;color:#555;transition:.15s}
+.back-btn:hover{background:#e8eaed;color:#333}
+
+/* ── Canvas (campaigns) ── */
+.canvas-area{position:relative;min-height:520px;background:#f9fafb;border:1px solid #e0e0e0;border-radius:4px;overflow:hidden}
+.c-node{position:absolute;padding:10px 16px;border-radius:6px;font-size:11px;font-weight:600;color:#fff;min-width:160px;text-align:center;cursor:default;box-shadow:0 2px 6px rgba(0,0,0,.15)}
+.c-node small{display:block;font-weight:400;opacity:.85;font-size:10px;margin-top:2px}
+.c-node.blue{background:#0572ce}
+.c-node.orange{background:#e67e22}
+.c-node.green-ot{background:#00897b}
+.c-node.red{background:#c74634}
+.c-node.teal{background:#00838f}
+.c-node.purple{background:#7b1fa2}
+.c-node.gray{background:#78909c}
+.canvas-area svg{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none}
+.canvas-area svg line{stroke:#999;stroke-width:2}
+.canvas-area svg line.yes{stroke:#27ae60;stroke-width:2.5}
+.canvas-area svg line.no{stroke:#c0392b;stroke-width:2.5;stroke-dasharray:6,3}
+.arrow-label{position:absolute;font-size:10px;font-weight:700;padding:1px 6px;border-radius:3px}
+.arrow-label.yes{background:#e6f4ea;color:#1e7e34}
+.arrow-label.no{background:#fde8e8;color:#c0392b}
+
+/* ── Segment filters ── */
+.seg-filter{background:#f5a623;color:#fff;border-radius:4px;padding:10px 14px;margin-bottom:8px;font-size:12px;min-height:56px}
+.seg-filter .sf-title{font-weight:700;font-size:12px}
+.seg-filter .sf-desc{font-weight:400;font-size:11px;opacity:.9;margin-top:2px}
+.seg-and{text-align:center;font-size:11px;font-weight:700;color:#888;margin:4px 0;background:#e8e8e8;padding:2px 10px;border-radius:3px;display:inline-block}
+.seg-filter.ot-filter{background:#00897b}
+
+/* ── Segment right panel ── */
+.seg-right-panel{position:absolute;right:0;top:0;width:270px;background:#fff;border-left:1px solid #ddd;height:100%;overflow-y:auto;padding:12px}
+.seg-right-panel .srp-item{padding:5px 8px;font-size:11px;color:#444;cursor:pointer;display:flex;align-items:center;gap:6px;border-radius:3px}
+.seg-right-panel .srp-item:hover{background:#e8eaed}
+.seg-right-panel .srp-item .sri{width:10px;height:10px;border-radius:2px;flex-shrink:0}
+
+/* ── Stat grid ── */
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-bottom:20px}
+.stat-card{background:#fff;border:1px solid #ddd;border-radius:6px;padding:16px;text-align:center}
+.stat-card .stat-num{font-size:26px;font-weight:700}
+.stat-card .stat-label{font-size:11px;color:#888;margin-top:4px}
+
+/* ── Toggle ── */
+.toggle-row{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid #eee}
+.toggle-row:last-child{border:none}
+.toggle{width:42px;height:22px;border-radius:11px;background:#ccc;position:relative;cursor:pointer;transition:.25s;flex-shrink:0}
+.toggle.on{background:#00897b}
+.toggle::after{content:'';width:18px;height:18px;border-radius:50%;background:#fff;position:absolute;top:2px;left:2px;transition:.25s;box-shadow:0 1px 3px rgba(0,0,0,.2)}
+.toggle.on::after{left:22px}
+.toggle-info{flex:1}
+.toggle-info .t-title{font-size:12px;font-weight:600;color:#333}
+.toggle-info .t-desc{font-size:11px;color:#888;margin-top:1px}
+
+/* ── Modal ── */
+.modal-overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.45);z-index:300;align-items:center;justify-content:center}
+.modal-overlay.show{display:flex}
+.modal{background:#fff;border-radius:6px;width:520px;max-width:95vw;box-shadow:0 6px 30px rgba(0,0,0,.25)}
+.modal-header{padding:14px 18px;border-bottom:1px solid #eee;font-size:14px;font-weight:600;display:flex;align-items:center;justify-content:space-between}
+.modal-header .close-btn{background:none;border:none;font-size:18px;cursor:pointer;color:#888}
+.modal-body{padding:18px}
+.modal-body label{display:block;font-size:12px;font-weight:600;color:#555;margin-bottom:4px;margin-top:12px}
+.modal-body label:first-child{margin-top:0}
+.modal-body input[type=text]{width:100%;padding:8px 10px;border:1px solid #ccc;border-radius:4px;font-size:12px}
+.modal-footer{padding:12px 18px;border-top:1px solid #eee;display:flex;justify-content:flex-end;gap:8px}
+
+/* ── View panels ── */
+.view-panel{display:none}
+.view-panel.active{display:block}
+
+/* ── Contact header card ── */
+.contact-hero{display:flex;gap:20px;align-items:center;padding:16px;flex-wrap:wrap}
+.contact-avatar{width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,#00695c,#00897b);color:#fff;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700;flex-shrink:0}
+.contact-meta{flex:1}
+.contact-meta .cm-name{font-size:18px;font-weight:700;color:#333}
+.contact-meta .cm-email{font-size:13px;color:#0572ce;margin-top:2px}
+.contact-stats{display:flex;gap:16px;margin-top:8px;flex-wrap:wrap}
+.contact-stats .cs{text-align:center;padding:4px 12px;border-radius:4px;background:#f7f8fa;border:1px solid #eee}
+.contact-stats .cs .csn{font-size:18px;font-weight:700}
+.contact-stats .cs .csl{font-size:10px;color:#888}
+
+/* ── Responsive ── */
+@media(max-width:900px){.sidebar{width:170px;min-width:170px}.nav-tabs-main .ntab{padding:0 8px;font-size:11px}}
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-thumb{background:#ccc;border-radius:3px}
+</style>
+</head>
+<body>
+
+<!-- ══ TOP NAV ══ -->
+<div class="top-nav">
+  <span class="hamburger">☰</span>
+  <div class="brand"><span class="oracle">ORACLE</span><sup>®</sup><span class="eloqua">Eloqua</span></div>
+  <div class="nav-tabs-main">
+    <div class="ntab active" id="mnav-contacts" onclick="switchView('contacts')">📇 Contacts</div>
+    <div class="ntab" id="mnav-campaigns" onclick="switchView('campaigns')">🚀 Campaigns</div>
+    <div class="ntab" id="mnav-segments" onclick="switchView('segments')">👥 Audience</div>
+    <div class="ntab" id="mnav-integration" onclick="switchView('integration')">🔗 Integrations</div>
+  </div>
+  <div class="nav-right">
+    <span onclick="openSettings()" title="Settings">⚙️</span>
+    <span>🔔</span>
+    <span>🔍</span>
+    <div class="avatar">AB</div>
+  </div>
+</div>
+
+<!-- ══════════ VIEW: CONTACTS ══════════ -->
+<div class="view-panel active" id="view-contacts">
+  <div class="sec-bar">
+    <span class="draft-badge">Contacts</span>
+    <span class="stitle">OneTrust Synced Contacts</span>
+    <div class="sec-bar-right">
+      <button class="btn btn-sm" onclick="exportCSV()">⬇ Export CSV</button>
+      <button class="btn btn-sm btn-ot" onclick="fetchData()">↻ Refresh</button>
+    </div>
+  </div>
+  <div class="main-layout">
+    <div class="sidebar">
+      <h4>Navigation</h4>
+      <div class="sitem active" id="snav-list" onclick="showContactList()"><span class="dot" style="background:#0572ce"></span>All Contacts</div>
+      <div class="sitem" id="snav-detail" style="display:none"><span class="dot" style="background:#00695c"></span>Contact Detail</div>
+      <h4 style="margin-top:12px">Quick Filters</h4>
+      <div class="sitem" onclick="quickFilter('all')"><span class="dot" style="background:#888"></span>All Statuses</div>
+      <div class="sitem" onclick="quickFilter('ACTIVE')"><span class="dot" style="background:#1e8e3e"></span>Active Consent</div>
+      <div class="sitem" onclick="quickFilter('WITHDRAWN')"><span class="dot" style="background:#d93025"></span>Withdrawn</div>
+      <div class="sitem" onclick="quickFilter('PENDING')"><span class="dot" style="background:#e8710a"></span>Pending</div>
+      <div class="sitem" onclick="quickFilter('EXPIRED')"><span class="dot" style="background:#80868b"></span>Expired</div>
+      <h4 style="margin-top:12px">Sync Info</h4>
+      <div style="padding:8px 16px;font-size:11px;color:#888" id="sidebar-sync-info">Not yet loaded</div>
+    </div>
+    <div class="content">
+      <!-- Contacts List -->
+      <div id="contacts-list-view">
+        <div class="filter-bar">
+          <input type="text" id="search-input" placeholder="🔍 Search by email, name..." oninput="applyFilters()" />
+          <select id="status-filter" onchange="applyFilters()">
+            <option value="all">All Consent Statuses</option>
+            <option value="ACTIVE">Active</option>
+            <option value="WITHDRAWN">Withdrawn</option>
+            <option value="NOT_OPT_OUT">Not Opt-Out</option>
+            <option value="PENDING">Pending</option>
+            <option value="EXPIRED">Expired</option>
+          </select>
+          <span class="count-label" id="count-label">—</span>
+        </div>
+        <div id="contacts-table-container">
+          <div class="loader" id="loader"><div class="spinner"></div>Fetching consent data from OneTrust…</div>
+        </div>
+        <div class="pagination" id="pagination"></div>
+      </div>
+
+      <!-- Contact Detail (hidden by default) -->
+      <div id="contact-detail-view" style="display:none"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ VIEW: CAMPAIGNS ══════════ -->
+<div class="view-panel" id="view-campaigns">
+  <div class="sec-bar">
+    <span class="draft-badge">DRAFT</span>
+    <span class="stitle">Consent-Aware Email Campaign</span>
+    <div class="sec-bar-right">
+      <button class="btn">File ▾</button>
+      <button class="btn">Actions ▾</button>
+      <button class="btn btn-primary">Save</button>
+      <button class="btn" style="background:#27ae60;color:#fff;border-color:#27ae60">Activate…</button>
+    </div>
+  </div>
+  <div class="main-layout">
+    <div class="sidebar">
+      <h4>Audience</h4>
+      <div class="sitem"><span class="dot" style="background:#27ae60"></span>Segment Members</div>
+      <h4>Assets</h4>
+      <div class="sitem"><span class="dot" style="background:#c0392b"></span>Landing Page <span style="font-size:10px;color:#aaa">(reporting)</span></div>
+      <div class="sitem"><span class="dot" style="background:#e67e22"></span>Email</div>
+      <div class="sitem"><span class="dot" style="background:#8e44ad"></span>Form <span style="font-size:10px;color:#aaa">(reporting)</span></div>
+      <h4>Decisions</h4>
+      <div class="sitem"><span class="dot" style="background:#e67e22"></span>Clicked Email?</div>
+      <div class="sitem"><span class="dot" style="background:#e67e22"></span>Compare Contact Fields</div>
+      <div class="sitem"><span class="dot" style="background:#e67e22"></span>Opened Email?</div>
+      <div class="sitem"><span class="dot" style="background:#e67e22"></span>Submitted Form?</div>
+      <div class="sitem" style="color:#00695c;font-weight:600"><span class="dot" style="background:#00695c"></span>OneTrust Consent Check ✦</div>
+      <div class="sitem" style="color:#00695c"><span class="dot" style="background:#00897b"></span>OT Purpose Opt-In? ✦</div>
+      <h4>Actions</h4>
+      <div class="sitem"><span class="dot" style="background:#78909c"></span>Send to Cloud Connector</div>
+      <div class="sitem"><span class="dot" style="background:#78909c"></span>Add to Campaign</div>
+      <div class="sitem"><span class="dot" style="background:#78909c"></span>Add to Shared List</div>
+      <div class="sitem"><span class="dot" style="background:#78909c"></span>Move to Program Builder</div>
+      <div class="sitem"><span class="dot" style="background:#78909c"></span>Wait</div>
+    </div>
+    <div class="content" style="padding:16px">
+      <div class="canvas-area">
+        <svg>
+          <line x1="280" y1="55" x2="280" y2="110"/>
+          <line class="yes" x1="280" y1="165" x2="280" y2="220"/>
+          <line class="no" x1="195" y1="140" x2="80" y2="140"/>
+          <line class="no" x1="80" y1="140" x2="80" y2="220"/>
+          <line x1="280" y1="275" x2="280" y2="320"/>
+          <line class="yes" x1="280" y1="375" x2="280" y2="420"/>
+          <line class="no" x1="370" y1="350" x2="500" y2="350"/>
+          <line class="no" x1="500" y1="350" x2="500" y2="420"/>
+        </svg>
+        <div class="c-node blue" style="left:200px;top:20px;min-width:170px">👥 Segment Members<small>ACME Newsletter Subscribers</small></div>
+        <div class="c-node green-ot" style="left:195px;top:110px;min-width:180px;border:2px solid #004d40">◉ OneTrust Consent Check<small>Purpose: Email Marketing = Active</small></div>
+        <div class="arrow-label yes" style="left:290px;top:178px">✔ YES</div>
+        <div class="arrow-label no" style="left:100px;top:125px">✘ NO</div>
+        <div class="c-node gray" style="left:15px;top:220px;min-width:140px">📋 Add to Re-consent List<small>Shared List: "Re-consent Q2"</small></div>
+        <div class="c-node orange" style="left:210px;top:220px;min-width:155px">✉️ Send Email<small>"May Newsletter 2026"</small></div>
+        <div class="c-node red" style="left:200px;top:320px;min-width:170px">📩 Clicked Email?<small>Double-click to configure…</small></div>
+        <div class="arrow-label yes" style="left:290px;top:388px">✔ YES</div>
+        <div class="arrow-label no" style="left:415px;top:333px">✘ NO</div>
+        <div class="c-node teal" style="left:200px;top:420px;min-width:170px">✉️ Follow-Up Email<small>"Exclusive Offer"</small></div>
+        <div class="c-node purple" style="left:430px;top:420px;min-width:155px">🔄 Add to Campaign<small>"Retargeting Q3"</small></div>
+        <div style="position:absolute;bottom:10px;right:14px;font-size:10px;color:#888;display:flex;gap:14px;align-items:center">
+          <span style="display:inline-flex;align-items:center;gap:4px"><span style="width:20px;height:3px;background:#27ae60;display:inline-block"></span>Yes path</span>
+          <span style="display:inline-flex;align-items:center;gap:4px"><span style="width:20px;height:3px;background:#c0392b;display:inline-block;border-top:2px dashed #c0392b"></span>No path</span>
+          <span class="ot-logo-inline">◉ OneTrust</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ VIEW: SEGMENTS ══════════ -->
+<div class="view-panel" id="view-segments">
+  <div class="sec-bar">
+    <span class="draft-badge">DRAFT</span>
+    <span class="stitle">Consented Subscribers — Segment</span>
+    <div class="sec-bar-right">
+      <button class="btn">View Contacts…</button>
+      <button class="btn btn-primary">Save</button>
+    </div>
+  </div>
+  <div class="main-layout">
+    <div class="sidebar">
+      <div style="padding:12px 16px;border-bottom:1px solid #ddd">
+        <div style="font-size:24px;font-weight:700;color:#0572ce" id="seg-count">—</div>
+        <div style="font-size:11px;color:#888">Contact Count</div>
+      </div>
+      <div style="padding:12px 16px">
+        <div class="sitem active" style="font-size:11px"><span class="dot" style="background:#0572ce"></span>Filter Criteria <span class="badge badge-blue" style="margin-left:auto;font-size:9px">3</span></div>
+        <div class="sitem" style="font-size:11px"><span class="dot" style="background:#27ae60"></span>Fill Criteria <span class="badge badge-gray" style="margin-left:auto;font-size:9px">718</span></div>
+      </div>
+    </div>
+    <div class="content" style="position:relative;padding-right:290px">
+      <div style="max-width:540px">
+        <div class="seg-filter"><div class="sf-title">📋 Compare Contact Fields</div><div class="sf-desc">Contacts where "Email Address" contains <strong>@acme.com</strong></div></div>
+        <div style="text-align:center"><span class="seg-and">AND</span></div>
+        <div class="seg-filter ot-filter"><div class="sf-title">◉ Compare Custom Object Fields <span class="ot-logo-inline" style="font-size:8px;margin-left:6px">OneTrust CDO</span></div><div class="sf-desc">OT_Email_Marketing_Consent <strong>= "ACTIVE"</strong> (CDO #510)</div></div>
+        <div style="text-align:center"><span class="seg-and">AND</span></div>
+        <div class="seg-filter ot-filter"><div class="sf-title">◉ Compare Custom Object Fields <span class="ot-logo-inline" style="font-size:8px;margin-left:6px">OneTrust CDO</span></div><div class="sf-desc">OT_Consent_Last_Updated <strong>&gt; 30 days ago</strong> (CDO #510)</div></div>
+        <div style="text-align:center"><span class="seg-and">AND</span></div>
+        <div class="seg-filter" style="background:#e67e22"><div class="sf-title">📧 Compare Account Fields</div><div class="sf-desc">Account Country <strong>= "Spain"</strong></div></div>
+      </div>
+      <div class="seg-right-panel">
+        <input type="text" placeholder="🔍 Search for Filter Criteria" style="width:100%;padding:5px 8px;border:1px solid #ccc;border-radius:3px;font-size:11px;margin-bottom:10px"/>
+        <div class="srp-item"><span class="sri" style="background:#f5a623"></span>Compare Contact Fields</div>
+        <div class="srp-item"><span class="sri" style="background:#f5a623"></span>Compare Visitor Profile Fields</div>
+        <div class="srp-item"><span class="sri" style="background:#f5a623"></span>Compare Account Fields</div>
+        <div class="srp-item"><span class="sri" style="background:#0572ce"></span>Has Linked Account</div>
+        <div class="srp-item"><span class="sri" style="background:#0572ce"></span>Has Linked Contact in CDO</div>
+        <div style="border-top:1px solid #eee;margin:8px 0"></div>
+        <div style="font-size:10px;font-weight:700;color:#00695c;padding:4px 8px;text-transform:uppercase;letter-spacing:.5px">◉ OneTrust Filters</div>
+        <div class="srp-item" style="color:#00695c"><span class="sri" style="background:#00695c"></span>OT: Email Marketing</div>
+        <div class="srp-item" style="color:#00695c"><span class="sri" style="background:#00695c"></span>OT: SMS Notifications</div>
+        <div class="srp-item" style="color:#00695c"><span class="sri" style="background:#00695c"></span>OT: Personalized Ads</div>
+        <div class="srp-item" style="color:#00695c"><span class="sri" style="background:#00695c"></span>OT: Third-Party Sharing</div>
+        <div class="srp-item" style="color:#00695c"><span class="sri" style="background:#00695c"></span>OT: Consent Last Updated</div>
+        <div style="border-top:1px solid #eee;margin:8px 0"></div>
+        <div class="srp-item"><span class="sri" style="background:#c0392b"></span>Sent Any Email</div>
+        <div class="srp-item"><span class="sri" style="background:#e67e22"></span>Opened Any Email</div>
+        <div class="srp-item"><span class="sri" style="background:#e67e22"></span>Opened Emails from Campaigns</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ VIEW: INTEGRATION HUB ══════════ -->
+<div class="view-panel" id="view-integration">
+  <div class="sec-bar">
+    <span class="connected-badge" id="int-status-badge">CONNECTING…</span>
+    <span class="stitle">OneTrust Native Integration — Universal Consent & Preference Management</span>
+    <div class="sec-bar-right">
+      <button class="btn btn-sm" onclick="fetchData()">↻ Refresh</button>
+      <button class="btn btn-sm btn-primary" onclick="openSettings()">Edit Configuration</button>
+    </div>
+  </div>
+  <div class="main-layout">
+    <div class="sidebar">
+      <h4>Integration Menu</h4>
+      <div class="sitem active"><span class="dot" style="background:#00695c"></span>Dashboard</div>
+      <div class="sitem"><span class="dot" style="background:#0572ce"></span>Connections</div>
+      <div class="sitem"><span class="dot" style="background:#e67e22"></span>Field Mapping</div>
+      <div class="sitem"><span class="dot" style="background:#8e44ad"></span>Credentials</div>
+      <div class="sitem"><span class="dot" style="background:#c0392b"></span>Error Logs</div>
+    </div>
+    <div class="content">
+      <div class="stat-grid" id="int-stats">
+        <div class="stat-card"><div class="stat-num" id="stat-status" style="color:#888">…</div><div class="stat-label">Connection Status</div></div>
+        <div class="stat-card"><div class="stat-num" style="color:#0572ce" id="stat-records">—</div><div class="stat-label">Total Records Fetched</div></div>
+        <div class="stat-card"><div class="stat-num" style="color:#e67e22" id="stat-contacts">—</div><div class="stat-label">Unique Contacts</div></div>
+        <div class="stat-card"><div class="stat-num" style="color:#333" id="stat-purposes">—</div><div class="stat-label">Unique Purposes</div></div>
+      </div>
+      <div class="card ot-border">
+        <div class="card-header"><span class="ot-logo-inline">◉ OneTrust</span> Available Connections</div>
+        <div class="card-body">
+          <div class="toggle-row"><div class="toggle on" onclick="this.classList.toggle('on')"></div><div class="toggle-info"><div class="t-title">Consent: Update Eloqua Contact Subscriptions on DS Profile Update</div><div class="t-desc">Updates Eloqua Contact Subscriptions when a data subject profile is updated in OneTrust.</div></div><span class="badge badge-green">Active</span></div>
+          <div class="toggle-row"><div class="toggle on" onclick="this.classList.toggle('on')"></div><div class="toggle-info"><div class="t-title">Eloqua: Update Eloqua Consent on DS Consent Update</div><div class="t-desc">Updates Eloqua consent (CDO fields) when a data subject's consent is updated in OneTrust.</div></div><span class="badge badge-green">Active</span></div>
+          <div class="toggle-row"><div class="toggle" onclick="this.classList.toggle('on')"></div><div class="toggle-info"><div class="t-title">Consent: Delete Eloqua Contact on DS Profile Delete</div><div class="t-desc">Deletes Eloqua contacts when a data subject profile is deleted in OneTrust.</div></div><span class="badge badge-gray">Inactive</span></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header">🔑 Integration Credentials</div>
+        <div class="card-body" style="display:grid;grid-template-columns:1fr 1fr;gap:0 40px">
+          <div class="field-row"><span class="field-label">Auth Method</span><span class="field-value">OAuth 2.0</span></div>
+          <div class="field-row"><span class="field-label">Eloqua Instance</span><span class="field-value">secure.p03.eloqua.com</span></div>
+          <div class="field-row"><span class="field-label">Credential Status</span><span class="field-value"><span class="badge badge-green" id="cred-status">Checking…</span></span></div>
+          <div class="field-row"><span class="field-label">OneTrust Environment</span><span class="field-value" id="ot-env">—</span></div>
+        </div>
+      </div>
+      <div class="card ot-border">
+        <div class="card-header"><span class="ot-logo-inline">◉ OneTrust</span> Field Mapping — OneTrust → Eloqua CDO #510</div>
+        <div class="card-body" style="padding:0">
+          <table class="etable">
+            <thead><tr><th>OneTrust Field (Source)</th><th style="text-align:center">→</th><th>Eloqua CDO Attribute (Target)</th><th>Type</th></tr></thead>
+            <tbody>
+              <tr><td>SUBJECT_ID</td><td style="text-align:center">→</td><td>Email Address / Contact ID</td><td>Identifier</td></tr>
+              <tr><td>PURPOSE_NAME</td><td style="text-align:center">→</td><td>Subscription Group / Purpose</td><td>String</td></tr>
+              <tr><td>CONSENT_TYPE</td><td style="text-align:center">→</td><td>Consent Status</td><td>Enum</td></tr>
+              <tr><td>PREFERENCES</td><td style="text-align:center">→</td><td>Preference Options (CDO Fields)</td><td>JSON → Chips</td></tr>
+              <tr><td>UPDATED_AT</td><td style="text-align:center">→</td><td>Consent_Last_Updated</td><td>Timestamp</td></tr>
+              <tr><td>ItemInternalId</td><td style="text-align:center">→</td><td>CDO Record ID</td><td>Integer</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header">📊 Live Sync Log</div>
+        <div class="card-body" style="padding:0"><table class="etable" id="sync-log-table"><thead><tr><th>Timestamp</th><th>Event</th><th>Records</th><th>Contacts</th><th>Status</th></tr></thead><tbody id="sync-log-body"></tbody></table></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SETTINGS MODAL ══ -->
+<div class="modal-overlay" id="settings-modal">
+  <div class="modal">
+    <div class="modal-header">⚙️ Integration Settings <button class="close-btn" onclick="closeSettings()">✕</button></div>
+    <div class="modal-body">
+      <label>API Endpoint URL</label>
+      <input type="text" id="cfg-url" placeholder="Power Automate endpoint URL"/>
+      <label>Username (identifier)</label>
+      <input type="text" id="cfg-user" placeholder="e.g. user@company.com"/>
+      <div style="margin-top:14px;font-size:11px;color:#888">Settings are stored in your browser's localStorage and used to fetch consent records from OneTrust via the configured endpoint.</div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" onclick="closeSettings()">Cancel</button>
+      <button class="btn btn-ot" onclick="saveSettings()">Save & Connect</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══════ CONFIG ═══════
+const DEFAULT_URL = "https://default9d1d17d8372b4b23a9fc1e5d895c89.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/a3eaffa116ac4c0cb3d7d5dc86724a8f/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=W5X3nvYDfsc1yBZYsz6SEYNA5ZfmZf4wODLLXHMyaO4";
+const DEFAULT_USER = "alvaro.barrosomato@onetrust.com";
+const PAGE_SIZE = 15;
+
+let allRecords = [];
+let groupedContacts = {};
+let contactList = [];
+let filteredList = [];
+let currentPage = 1;
+let syncLog = [];
+
+function getConfig() {
+  return {
+    url: localStorage.getItem('eloqua_api_url') || DEFAULT_URL,
+    user: localStorage.getItem('eloqua_api_user') || DEFAULT_USER
+  };
+}
+
+// ═══════ SETTINGS MODAL ═══════
+function openSettings() {
+  const c = getConfig();
+  document.getElementById('cfg-url').value = c.url;
+  document.getElementById('cfg-user').value = c.user;
+  document.getElementById('settings-modal').classList.add('show');
+}
+function closeSettings() { document.getElementById('settings-modal').classList.remove('show'); }
+function saveSettings() {
+  localStorage.setItem('eloqua_api_url', document.getElementById('cfg-url').value.trim());
+  localStorage.setItem('eloqua_api_user', document.getElementById('cfg-user').value.trim());
+  closeSettings();
+  fetchData();
+}
+
+// ═══════ VIEW SWITCHING ═══════
+function switchView(view) {
+  document.querySelectorAll('.view-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-tabs-main .ntab').forEach(t => t.classList.remove('active'));
+  document.getElementById('view-' + view).classList.add('active');
+  document.getElementById('mnav-' + view).classList.add('active');
+}
+
+// ═══════ FETCH DATA ═══════
+async function fetchData() {
+  const cfg = getConfig();
+  const container = document.getElementById('contacts-table-container');
+  container.innerHTML = '<div class="loader"><div class="spinner"></div>Fetching consent data from OneTrust…</div>';
+  document.getElementById('int-status-badge').textContent = 'SYNCING…';
+  document.getElementById('int-status-badge').style.background = '#e8710a';
+
+  try {
+    const url = cfg.url + '&username=' + encodeURIComponent(cfg.user);
+    const resp = await fetch(url, { method: 'GET' });
+    if (!resp.ok) throw new Error('HTTP ' + resp.status);
+    const data = await resp.json();
+    allRecords = Array.isArray(data) ? data : (data.value || data.records || [data]);
+
+    processData();
+    renderContactList();
+    updateIntegrationHub(true);
+    addSyncLogEntry(true);
+  } catch (err) {
+    container.innerHTML = '<div class="loader" style="color:#c0392b">❌ Failed to fetch data: ' + err.message + '<br><br><button class="btn btn-ot" onclick="openSettings()">Check Settings</button></div>';
+    updateIntegrationHub(false);
+    addSyncLogEntry(false, err.message);
+  }
+}
+
+// ═══════ PROCESS & GROUP ═══════
+function processData() {
+  groupedContacts = {};
+  allRecords.forEach(r => {
+    const email = (r.SUBJECT_ID || r.subject_id || r.Email || '').trim().toLowerCase();
+    if (!email) return;
+    if (!groupedContacts[email]) groupedContacts[email] = [];
+    groupedContacts[email].push(r);
+  });
+
+  contactList = Object.keys(groupedContacts).map(email => {
+    const records = groupedContacts[email];
+    const purposes = records.length;
+    let active = 0, withdrawn = 0, pending = 0, expired = 0, notoptout = 0;
+    let latestDate = '';
+    records.forEach(r => {
+      const ct = (r.CONSENT_TYPE || r.consent_type || '').toUpperCase().replace(/\s+/g,'_');
+      if (ct === 'ACTIVE' || ct === 'OPT_IN') active++;
+      else if (ct === 'WITHDRAWN' || ct === 'OPT_OUT') withdrawn++;
+      else if (ct === 'PENDING') pending++;
+      else if (ct === 'EXPIRED') expired++;
+      else if (ct === 'NOT_OPT_OUT') notoptout++;
+      else active++; // default bucket
+      const d = r.UPDATED_AT || r.updated_at || '';
+      if (d > latestDate) latestDate = d;
+    });
+    const name = emailToName(email);
+    return { email, name, purposes, active, withdrawn, pending, expired, notoptout, latestDate, records };
+  });
+
+  contactList.sort((a, b) => b.latestDate.localeCompare(a.latestDate));
+  filteredList = [...contactList];
+  currentPage = 1;
+
+  // Update segment count
+  const el = document.getElementById('seg-count');
+  if (el) el.textContent = contactList.length.toLocaleString();
+}
+
+function emailToName(email) {
+  const local = email.split('@')[0] || '';
+  return local.replace(/[._\-+]/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+}
+
+function consentClass(type) {
+  const t = (type || '').toUpperCase().replace(/\s+/g,'_');
+  if (t === 'ACTIVE' || t === 'OPT_IN') return 'active';
+  if (t === 'WITHDRAWN' || t === 'OPT_OUT') return 'withdrawn';
+  if (t === 'NOT_OPT_OUT') return 'notoptout';
+  if (t === 'PENDING') return 'pending';
+  if (t === 'EXPIRED') return 'expired';
+  return 'active';
+}
+function consentLabel(type) {
+  const t = (type || '').toUpperCase().replace(/\s+/g,'_');
+  if (t === 'ACTIVE' || t === 'OPT_IN') return 'Active';
+  if (t === 'WITHDRAWN' || t === 'OPT_OUT') return 'Withdrawn';
+  if (t === 'NOT_OPT_OUT') return 'Not Opt-Out';
+  if (t === 'PENDING') return 'Pending';
+  if (t === 'EXPIRED') return 'Expired';
+  return type || '—';
+}
+
+// ═══════ FILTERS ═══════
+function applyFilters() {
+  const q = (document.getElementById('search-input').value || '').toLowerCase();
+  const st = document.getElementById('status-filter').value;
+  filteredList = contactList.filter(c => {
+    const matchText = !q || c.email.includes(q) || c.name.toLowerCase().includes(q);
+    let matchStatus = true;
+    if (st !== 'all') {
+      const stU = st.toUpperCase();
+      if (stU === 'ACTIVE') matchStatus = c.active > 0;
+      else if (stU === 'WITHDRAWN') matchStatus = c.withdrawn > 0;
+      else if (stU === 'NOT_OPT_OUT') matchStatus = c.notoptout > 0;
+      else if (stU === 'PENDING') matchStatus = c.pending > 0;
+      else if (stU === 'EXPIRED') matchStatus = c.expired > 0;
+    }
+    return matchText && matchStatus;
+  });
+  currentPage = 1;
+  renderContactList();
+}
+function quickFilter(status) {
+  document.getElementById('status-filter').value = status === 'all' ? 'all' : status;
+  document.getElementById('search-input').value = '';
+  applyFilters();
+  // highlight active sidebar item
+  document.querySelectorAll('#view-contacts .sidebar .sitem').forEach(s => s.classList.remove('active'));
+}
+
+// ═══════ RENDER CONTACT LIST ═══════
+function renderContactList() {
+  const container = document.getElementById('contacts-table-container');
+  if (filteredList.length === 0) {
+    container.innerHTML = '<div style="padding:40px;text-align:center;color:#888">No contacts found matching your criteria.</div>';
+    document.getElementById('count-label').textContent = '0 contacts';
+    document.getElementById('pagination').innerHTML = '';
+    return;
+  }
+
+  const totalPages = Math.ceil(filteredList.length / PAGE_SIZE);
+  if (currentPage > totalPages) currentPage = totalPages;
+  const start = (currentPage - 1) * PAGE_SIZE;
+  const page = filteredList.slice(start, start + PAGE_SIZE);
+
+  document.getElementById('count-label').textContent = filteredList.length + ' contact' + (filteredList.length !== 1 ? 's' : '') + ' synced';
+
+  let html = '<table class="etable"><thead><tr><th style="width:36px">#</th><th>Email (SUBJECT_ID)</th><th>Contact Name</th><th style="text-align:center">Purposes</th><th style="text-align:center">Active</th><th style="text-align:center">Withdrawn</th><th>Last Updated</th><th style="text-align:center">Status</th></tr></thead><tbody>';
+  page.forEach((c, i) => {
+    const idx = start + i + 1;
+    let statusBadges = '';
+    if (c.active > 0) statusBadges += '<span class="badge badge-green" style="margin:1px">' + c.active + ' Active</span> ';
+    if (c.withdrawn > 0) statusBadges += '<span class="badge badge-red" style="margin:1px">' + c.withdrawn + ' Withdrawn</span> ';
+    if (c.pending > 0) statusBadges += '<span class="badge badge-orange" style="margin:1px">' + c.pending + ' Pending</span> ';
+    if (c.notoptout > 0) statusBadges += '<span class="badge badge-blue" style="margin:1px">' + c.notoptout + ' Not Opt-Out</span> ';
+    if (c.expired > 0) statusBadges += '<span class="badge badge-gray" style="margin:1px">' + c.expired + ' Expired</span> ';
+    const dateStr = c.latestDate ? formatDate(c.latestDate) : '—';
+    html += '<tr class="clickable" onclick="showContactDetail(\'' + escapeHtml(c.email) + '\')">';
+    html += '<td style="text-align:center;color:#888">' + idx + '</td>';
+    html += '<td style="color:#0572ce;font-weight:500">' + escapeHtml(c.email) + '</td>';
+    html += '<td>' + escapeHtml(c.name) + '</td>';
+    html += '<td style="text-align:center;font-weight:600">' + c.purposes + '</td>';
+    html += '<td style="text-align:center"><span class="sdot active">' + c.active + '</span></td>';
+    html += '<td style="text-align:center"><span class="sdot withdrawn">' + c.withdrawn + '</span></td>';
+    html += '<td style="font-size:11px;color:#666">' + dateStr + '</td>';
+    html += '<td style="text-align:center">' + statusBadges + '</td>';
+    html += '</tr>';
+  });
+  html += '</tbody></table>';
+  container.innerHTML = html;
+
+  // Pagination
+  let pHtml = '';
+  if (totalPages > 1) {
+    pHtml += '<button ' + (currentPage <= 1 ? 'disabled' : '') + ' onclick="goPage(' + (currentPage-1) + ')">‹ Prev</button>';
+    for (let p = 1; p <= totalPages; p++) {
+      if (totalPages > 7 && Math.abs(p - currentPage) > 2 && p !== 1 && p !== totalPages) {
+        if (p === 2 || p === totalPages - 1) pHtml += '<span>…</span>';
+        continue;
+      }
+      pHtml += '<button class="' + (p === currentPage ? 'active' : '') + '" onclick="goPage(' + p + ')">' + p + '</button>';
+    }
+    pHtml += '<button ' + (currentPage >= totalPages ? 'disabled' : '') + ' onclick="goPage(' + (currentPage+1) + ')">Next ›</button>';
+  }
+  document.getElementById('pagination').innerHTML = pHtml;
+}
+function goPage(p) { currentPage = p; renderContactList(); }
+
+// ═══════ CONTACT DETAIL ═══════
+function showContactDetail(email) {
+  const records = groupedContacts[email.toLowerCase()];
+  if (!records) return;
+
+  document.getElementById('contacts-list-view').style.display = 'none';
+  document.getElementById('contact-detail-view').style.display = 'block';
+  document.getElementById('snav-detail').style.display = '';
+  document.getElementById('snav-list').classList.remove('active');
+  document.getElementById('snav-detail').classList.add('active');
+
+  const name = emailToName(email);
+  const initials = name.split(' ').map(w => w[0]).slice(0, 2).join('').toUpperCase();
+  const profileId = records[0].ItemInternalId || records[0].iteminternalid || '—';
+  const active = records.filter(r => consentClass(r.CONSENT_TYPE || r.consent_type) === 'active').length;
+  const withdrawn = records.filter(r => consentClass(r.CONSENT_TYPE || r.consent_type) === 'withdrawn').length;
+  let latestDate = '';
+  records.forEach(r => { const d = r.UPDATED_AT || r.updated_at || ''; if (d > latestDate) latestDate = d; });
+
+  let html = '';
+  html += '<button class="back-btn" onclick="showContactList()">← Back to Contacts List</button>';
+
+  // Hero card
+  html += '<div class="card"><div class="contact-hero">';
+  html += '<div class="contact-avatar">' + initials + '</div>';
+  html += '<div class="contact-meta">';
+  html += '<div class="cm-name">' + escapeHtml(name) + '</div>';
+  html += '<div class="cm-email">' + escapeHtml(email) + '</div>';
+  html += '<div class="contact-stats">';
+  html += '<div class="cs"><div class="csn">' + records.length + '</div><div class="csl">Purposes</div></div>';
+  html += '<div class="cs"><div class="csn" style="color:#1e8e3e">' + active + '</div><div class="csl">Active</div></div>';
+  html += '<div class="cs"><div class="csn" style="color:#d93025">' + withdrawn + '</div><div class="csl">Withdrawn</div></div>';
+  html += '</div></div>';
+  html += '</div></div>';
+
+  // Contact info card (Eloqua-style)
+  html += '<div class="card"><div class="card-header">📋 Eloqua Contact Information</div><div class="card-body" style="display:grid;grid-template-columns:1fr 1fr;gap:0 40px">';
+  html += frow('Email Address', email);
+  html += frow('Contact Name', name);
+  html += frow('Eloqua Contact ID', 'ELQ-' + Math.abs(hashCode(email)).toString().slice(0,5));
+  html += frow('isSubscribed', active > 0 ? '<span class="badge badge-green">Yes</span>' : '<span class="badge badge-red">No</span>');
+  html += frow('Last Synced', latestDate ? formatDate(latestDate) : '—');
+  html += frow('Sync Source', 'Native Integration — Consent Update Workflow');
+  html += '</div></div>';
+
+  // OneTrust Consent card
+  html += '<div class="card ot-border"><div class="card-header"><span class="ot-logo-inline">◉ OneTrust</span> Consent & Preference Status <span style="margin-left:auto" class="badge badge-ot">✔ Synced</span></div>';
+  html += '<div class="card-body" style="display:flex;gap:30px;margin-bottom:14px;flex-wrap:wrap">';
+  html += frow('OneTrust Profile ID', '<span style="color:#00695c;font-weight:600">CTPO' + profileId + '</span>');
+  html += frow('CDO Instance', '#510 — OneTrust_Consent_Preferences');
+  html += '</div>';
+
+  // Purposes table
+  html += '<table class="etable"><thead><tr><th>Purpose (PURPOSE_NAME)</th><th style="text-align:center">Consent Status</th><th>Preferences</th><th>Last Updated</th><th>Record ID</th></tr></thead><tbody>';
+  records.forEach(r => {
+    const purpose = r.PURPOSE_NAME || r.purpose_name || '—';
+    const ctype = r.CONSENT_TYPE || r.consent_type || '—';
+    const cls = consentClass(ctype);
+    const label = consentLabel(ctype);
+    const prefs = r.PREFERENCES || r.preferences || '';
+    const updated = r.UPDATED_AT || r.updated_at || '—';
+    const rid = r.ItemInternalId || r.iteminternalid || '—';
+
+    html += '<tr>';
+    html += '<td style="font-weight:600">' + escapeHtml(purpose) + '</td>';
+    html += '<td style="text-align:center"><span class="sdot ' + cls + '">' + label + '</span></td>';
+    html += '<td>' + renderPreferences(prefs) + '</td>';
+    html += '<td style="font-size:11px;color:#666">' + formatDate(updated) + '</td>';
+    html += '<td style="font-size:11px;color:#888">' + rid + '</td>';
+    html += '</tr>';
+  });
+  html += '</tbody></table></div></div>';
+
+  // CDO Raw Data card
+  html += '<div class="card ot-border"><div class="card-header"><span class="ot-logo-inline">◉ OneTrust</span> CDO Raw Field Values — Eloqua Custom Data Object #510</div>';
+  html += '<div class="card-body" style="padding:0"><table class="etable"><thead><tr><th>CDO Attribute</th><th>Value</th><th>Mapped From</th></tr></thead><tbody>';
+  html += cdoRow('Email Address', email, 'SUBJECT_ID');
+  records.forEach((r, i) => {
+    const purpose = (r.PURPOSE_NAME || r.purpose_name || '').replace(/\s+/g, '_');
+    const ctype = r.CONSENT_TYPE || r.consent_type || '';
+    const cls = consentClass(ctype);
+    const color = cls === 'active' ? '#1e8e3e' : cls === 'withdrawn' ? '#d93025' : '#555';
+    html += cdoRow(purpose + '_Consent', '<span style="color:' + color + ';font-weight:600">' + consentLabel(ctype) + '</span>', 'CONSENT_TYPE');
+  });
+  html += cdoRow('Consent_Last_Updated', latestDate ? formatDate(latestDate) : '—', 'UPDATED_AT');
+  html += cdoRow('OneTrust_Profile_ID', 'CTPO' + profileId, 'ItemInternalId');
+  html += '</tbody></table></div></div>';
+
+  document.getElementById('contact-detail-view').innerHTML = html;
+}
+
+function showContactList() {
+  document.getElementById('contacts-list-view').style.display = '';
+  document.getElementById('contact-detail-view').style.display = 'none';
+  document.getElementById('snav-detail').style.display = 'none';
+  document.getElementById('snav-list').classList.add('active');
+  document.getElementById('snav-detail').classList.remove('active');
+}
+
+// ═══════ RENDER PREFERENCES (chips) ═══════
+function renderPreferences(prefs) {
+  if (!prefs || prefs === '—') return '<span style="color:#aaa;font-size:11px">—</span>';
+  let obj = prefs;
+  if (typeof prefs === 'string') {
+    try { obj = JSON.parse(prefs); } catch(e) {
+      // Try to handle simple comma separated or key:value
+      if (prefs.includes(':')) {
+        const parts = prefs.split(',').map(s => s.trim());
+        let html = '<div class="chips">';
+        parts.forEach(p => {
+          const [k, v] = p.split(':').map(s => s.trim());
+          const isOn = v && (v.toLowerCase() === 'true' || v.toLowerCase() === 'on' || v.toLowerCase() === 'yes' || v === '1');
+          html += '<span class="chip ' + (isOn ? 'on' : '') + '"><span class="chip-icon">' + (isOn ? '✓' : '✕') + '</span> ' + escapeHtml(k || p) + '</span>';
+        });
+        html += '</div>';
+        return html;
+      }
+      return '<span style="font-size:11px">' + escapeHtml(String(prefs)) + '</span>';
+    }
+  }
+  // Object or array
+  if (Array.isArray(obj)) {
+    if (obj.length === 0) return '<span style="color:#aaa;font-size:11px">—</span>';
+    let html = '<div class="chips">';
+    obj.forEach(item => {
+      if (typeof item === 'object' && item !== null) {
+        const name = item.name || item.option || item.label || item.key || Object.values(item)[0] || '';
+        const val = item.value !== undefined ? item.value : (item.enabled !== undefined ? item.enabled : (item.isSelected !== undefined ? item.isSelected : true));
+        const isOn = val === true || val === 'true' || val === 'True' || val === 1 || val === '1' || val === 'on' || val === 'On' || val === 'yes' || val === 'Yes';
+        html += '<span class="chip ' + (isOn ? 'on' : '') + '"><span class="chip-icon">' + (isOn ? '✓' : '✕') + '</span> ' + escapeHtml(String(name)) + '</span>';
+      } else {
+        html += '<span class="chip on"><span class="chip-icon">✓</span> ' + escapeHtml(String(item)) + '</span>';
+      }
+    });
+    html += '</div>';
+    return html;
+  }
+  if (typeof obj === 'object' && obj !== null) {
+    let html = '<div class="chips">';
+    Object.entries(obj).forEach(([k, v]) => {
+      const isOn = v === true || v === 'true' || v === 'True' || v === 1 || v === '1' || v === 'on' || v === 'On' || v === 'yes' || v === 'Yes';
+      html += '<span class="chip ' + (isOn ? 'on' : '') + '"><span class="chip-icon">' + (isOn ? '✓' : '✕') + '</span> ' + escapeHtml(k) + '</span>';
+    });
+    html += '</div>';
+    return html;
+  }
+  return '<span style="font-size:11px">' + escapeHtml(String(prefs)) + '</span>';
+}
+
+// ═══════ INTEGRATION HUB ═══════
+function updateIntegrationHub(success) {
+  const badge = document.getElementById('int-status-badge');
+  const statStatus = document.getElementById('stat-status');
+  const credStatus = document.getElementById('cred-status');
+  const otEnv = document.getElementById('ot-env');
+  const cfg = getConfig();
+  otEnv.textContent = cfg.user;
+
+  if (success) {
+    badge.textContent = 'CONNECTED'; badge.style.background = '#00695c';
+    statStatus.textContent = '●'; statStatus.style.color = '#00695c';
+    credStatus.textContent = '✔ Valid'; credStatus.className = 'badge badge-green';
+  } else {
+    badge.textContent = 'ERROR'; badge.style.background = '#d93025';
+    statStatus.textContent = '●'; statStatus.style.color = '#d93025';
+    credStatus.textContent = '✕ Failed'; credStatus.className = 'badge badge-red';
+  }
+  document.getElementById('stat-records').textContent = allRecords.length.toLocaleString();
+  document.getElementById('stat-contacts').textContent = Object.keys(groupedContacts).length.toLocaleString();
+  const purposes = new Set();
+  allRecords.forEach(r => { const p = r.PURPOSE_NAME || r.purpose_name; if (p) purposes.add(p); });
+  document.getElementById('stat-purposes').textContent = purposes.size.toLocaleString();
+
+  // Sidebar sync info
+  document.getElementById('sidebar-sync-info').innerHTML = 'Records: <strong>' + allRecords.length + '</strong><br>Contacts: <strong>' + Object.keys(groupedContacts).length + '</strong><br>Purposes: <strong>' + purposes.size + '</strong><br>Last fetch: <strong>' + new Date().toLocaleTimeString() + '</strong>';
+}
+
+function addSyncLogEntry(success, errMsg) {
+  syncLog.unshift({
+    ts: new Date().toISOString(),
+    success,
+    records: allRecords.length,
+    contacts: Object.keys(groupedContacts).length,
+    err: errMsg || ''
+  });
+  if (syncLog.length > 20) syncLog.pop();
+  renderSyncLog();
+}
+function renderSyncLog() {
+  const tbody = document.getElementById('sync-log-body');
+  tbody.innerHTML = syncLog.map(e => {
+    const status = e.success ? '<span class="badge badge-green">Success</span>' : '<span class="badge badge-red">Failed</span>';
+    return '<tr><td style="font-size:11px">' + formatDate(e.ts) + '</td><td>' + (e.success ? 'Consent Sync (GET)' : 'Sync Error: ' + escapeHtml(e.err)) + '</td><td style="text-align:center">' + e.records + '</td><td style="text-align:center">' + e.contacts + '</td><td>' + status + '</td></tr>';
+  }).join('');
+}
+
+// ═══════ CSV EXPORT ═══════
+function exportCSV() {
+  if (filteredList.length === 0) return alert('No data to export.');
+  let csv = 'Email,Name,Purposes,Active,Withdrawn,Pending,Expired,Last_Updated\n';
+  filteredList.forEach(c => {
+    csv += '"' + c.email + '","' + c.name + '",' + c.purposes + ',' + c.active + ',' + c.withdrawn + ',' + c.pending + ',' + c.expired + ',"' + c.latestDate + '"\n';
+  });
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'eloqua_onetrust_contacts_' + new Date().toISOString().slice(0,10) + '.csv';
+  a.click();
+}
+
+// ═══════ HELPERS ═══════
+function escapeHtml(t) { const d = document.createElement('div'); d.textContent = t; return d.innerHTML; }
+function formatDate(d) {
+  if (!d || d === '—') return '—';
+  try { const dt = new Date(d); return isNaN(dt) ? d : dt.toLocaleString('en-GB', { year:'numeric',month:'short',day:'2-digit',hour:'2-digit',minute:'2-digit' }); } catch(e) { return d; }
+}
+function frow(label, value) { return '<div class="field-row"><span class="field-label">' + label + '</span><span class="field-value">' + value + '</span></div>'; }
+function cdoRow(attr, val, source) { return '<tr><td style="font-weight:500">' + attr + '</td><td>' + val + '</td><td style="font-size:11px;color:#888">' + source + '</td></tr>'; }
+function hashCode(s) { let h=0; for(let i=0;i<s.length;i++){ h=Math.imul(31,h)+s.charCodeAt(i)|0; } return h; }
+
+// ═══════ INIT ═══════
+document.addEventListener('DOMContentLoaded', () => { fetchData(); });
+</script>
+</body>
+</html>
