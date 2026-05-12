@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Oracle Eloqua – OneTrust Consent Integration</title>
-<link rel="icon" type="image/x-icon" href="oracle.ico"/>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:'Segoe UI',Arial,Helvetica,sans-serif;background:#f0f1f3;color:#333;font-size:13px}
@@ -484,6 +483,7 @@ const DEFAULT_USER = "alvaro.barrosomato@onetrust.com";
 const PAGE_SIZE = 15;
 
 let allRecords = [];
+let baseRecords = [];
 let groupedContacts = {};
 let contactList = [];
 let filteredList = [];
@@ -520,6 +520,15 @@ function switchView(view) {
   document.getElementById('mnav-' + view).classList.add('active');
 }
 
+function getUsernameFromUrl() {
+  try {
+    const params = new URLSearchParams(window.location.search);
+    return (params.get('username') || '').trim().toLowerCase();
+  } catch {
+    return '';
+  }
+}
+
 // ═══════ FETCH DATA ═══════
 async function fetchData() {
   const cfg = getConfig();
@@ -535,6 +544,11 @@ async function fetchData() {
     const data = await resp.json();
     allRecords = Array.isArray(data) ? data : (data.value || data.records || [data]);
 
+    const urlUser = getUsernameFromUrl();
+    baseRecords = urlUser
+      ? allRecords.filter(r => String(r.SUBJECT_ID || r.subject_id || '').toLowerCase() === urlUser)
+      : allRecords.slice();
+
     processData();
     renderContactList();
     updateIntegrationHub(true);
@@ -549,7 +563,7 @@ async function fetchData() {
 // ═══════ PROCESS & GROUP ═══════
 function processData() {
   groupedContacts = {};
-  allRecords.forEach(r => {
+  baseRecords.forEach(r => {
     const email = (r.SUBJECT_ID || r.subject_id || r.Email || '').trim().toLowerCase();
     if (!email) return;
     if (!groupedContacts[email]) groupedContacts[email] = [];
@@ -865,7 +879,7 @@ function updateIntegrationHub(success) {
   document.getElementById('stat-records').textContent = allRecords.length.toLocaleString();
   document.getElementById('stat-contacts').textContent = Object.keys(groupedContacts).length.toLocaleString();
   const purposes = new Set();
-  allRecords.forEach(r => { const p = r.PURPOSE_NAME || r.purpose_name; if (p) purposes.add(p); });
+  baseRecords.forEach(r => { const p = r.PURPOSE_NAME || r.purpose_name; if (p) purposes.add(p); });
   document.getElementById('stat-purposes').textContent = purposes.size.toLocaleString();
 
   // Sidebar sync info
