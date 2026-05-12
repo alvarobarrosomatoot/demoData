@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Kafka Simulator – Consent Event Streaming</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+body {
+  font-family: Arial, sans-serif;
+  background: #0f172a;
+  color: #e2e8f0;
+  margin: 0;
+}
+
+.header {
+  background: #020617;
+  padding: 12px 20px;
+  font-weight: bold;
+  font-size: 16px;
+  border-bottom: 1px solid #1e293b;
+}
+
+.layout {
+  display: flex;
+  height: calc(100vh - 50px);
+}
+
+.column {
+  flex: 1;
+  padding: 15px;
+}
+
+.card {
+  background: #1e293b;
+  border-radius: 6px;
+  padding: 12px;
+  margin-bottom: 12px;
+}
+
+.title {
+  font-size: 12px;
+  color: #94a3b8;
+  margin-bottom: 6px;
+}
+
+.node {
+  padding: 10px;
+  border-radius: 6px;
+  text-align: center;
+  font-weight: bold;
+}
+
+.producer { background: #00695c; }
+.topic { background: #1d4ed8; }
+.consumer { background: #7c2d12; }
+
+button {
+  padding: 6px 10px;
+  margin-top: 6px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+button.primary {
+  background: #22c55e;
+  color: black;
+}
+
+button.secondary {
+  background: #475569;
+  color: white;
+}
+
+.stream {
+  background: #020617;
+  border-top: 1px solid #1e293b;
+  height: 300px;
+  overflow-y: auto;
+  font-size: 12px;
+}
+
+.row {
+  padding: 6px;
+  border-bottom: 1px solid #1e293b;
+}
+
+.badge {
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 10px;
+}
+
+.green { background:#16a34a; }
+.red { background:#dc2626; }
+.yellow { background:#eab308; color:black; }
+
+.flow-area {
+  position: relative;
+  height: 250px;
+}
+
+.dot {
+  width: 10px;
+  height: 10px;
+  background: #22c55e;
+  border-radius: 50%;
+  position: absolute;
+  animation: move 1s linear forwards;
+}
+
+@keyframes move {
+  from { left:20px; top:40px;}
+  to { left:400px; top:140px;}
+}
+
+.toggle ON {
+  background:green;
+}
+
+</style>
+</head>
+
+
+<body>
+
+<div class="header">
+Kafka Simulator – Consent Event Streaming
+</div>
+
+<div class="layout">
+
+<!-- PRODUCER -->
+<div class="column">
+  <div class="card">
+    <div class="title">Producer – OneTrust CMP</div>
+    <div class="node producer">OneTrust</div>
+
+    <input id="email" placeholder="Email" style="width:100%;margin-top:8px;">
+    
+    <select id="purpose" style="width:100%;margin-top:6px;">
+      <option>Email Marketing</option>
+      <option>Personalized Ads</option>
+    </select>
+
+    <select id="status" style="width:100%;margin-top:6px;">
+      <option>ACTIVE</option>
+      <option>WITHDRAWN</option>
+    </select>
+
+    <button class="primary" onclick="generateEvent()">Generate Event</button>
+    <button class="secondary" onclick="replay()">Replay</button>
+  </div>
+</div>
+
+<!-- TOPICS -->
+<div class="column">
+  <div class="card">
+    <div class="title">Kafka Topics</div>
+    <div class="node topic">consent-events</div>
+  </div>
+
+  <div class="flow-area" id="flow"></div>
+</div>
+
+<!-- CONSUMERS -->
+<div class="column">
+  <div class="card">
+    <div class="title">Consumers</div>
+
+    <div>
+      Eloqua 
+      <button onclick="toggle('eloqua')">Toggle</button>
+      <span id="eloqua-status" class="badge green">ON</span>
+    </div><br>
+
+    <div>
+      SFMC 
+      <button onclick="toggle('sfmc')">Toggle</button>
+      <span id="sfmc-status" class="badge green">ON</span>
+    </div><br>
+
+    <div>
+      Snowflake 
+      <button onclick="toggle('snowflake')">Toggle</button>
+      <span id="snowflake-status" class="badge green">ON</span>
+    </div>
+
+  </div>
+</div>
+
+</div>
+
+<!-- STREAM -->
+<div class="stream" id="stream"></div>
+
+
+<script>
+
+let events = []
+let consumers = {
+  eloqua: true,
+  sfmc: true,
+  snowflake: true
+}
+
+function getUsernameFromUrl() {
+  const params = new URLSearchParams(window.location.search)
+  return params.get('username') || ""
+}
+
+function generateEvent() {
+
+  let email = document.getElementById("email").value || randomEmail()
+
+  let urlUser = getUsernameFromUrl()
+  if(urlUser) email = urlUser
+
+  const event = {
+    id: Date.now(),
+    email: email,
+    purpose: document.getElementById("purpose").value,
+    status: document.getElementById("status").value,
+    timestamp: new Date().toLocaleTimeString()
+  }
+
+  events.unshift(event)
+
+  animate()
+  route(event)
+  render()
+}
+
+function route(event) {
+
+  Object.keys(consumers).forEach(c => {
+
+    if(consumers[c]) {
+      setTimeout(()=>{
+        log(event, c, "delivered")
+      }, Math.random()*1500)
+    } else {
+      log(event, c, "skipped")
+    }
+
+  })
+}
+
+function log(event, consumer, state) {
+
+  const row = document.createElement("div")
+  row.className="row"
+
+  row.innerHTML = `
+    ${event.timestamp} | ${event.email} | ${event.purpose} | 
+    ${event.status} | ${consumer} |
+    <span class="badge ${state==="delivered" ? "green":"red"}">${state}</span>
+  `
+
+  document.getElementById("stream").prepend(row)
+}
+
+function toggle(name){
+  consumers[name] = !consumers[name]
+
+  document.getElementById(name+"-status").textContent = consumers[name]?"ON":"OFF"
+  document.getElementById(name+"-status").className =
+    "badge "+(consumers[name]?"green":"red")
+}
+
+function render(){
+  // no-op for now
+}
+
+function replay(){
+  events.forEach((e,i)=>{
+    setTimeout(()=>route(e), i*300)
+  })
+}
+
+function randomEmail(){
+  return ["ana","john","lucas","maria"][Math.floor(Math.random()*4)]+"@acme.com"
+}
+
+function animate(){
+  const d = document.createElement("div")
+  d.className="dot"
+  document.getElementById("flow").appendChild(d)
+
+  setTimeout(()=>d.remove(), 1000)
+}
+
+</script>
+
+</body>
+</html>
+``
