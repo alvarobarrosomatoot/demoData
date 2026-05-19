@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kafka Queue Simulator — UCPM Integration Demo</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<style>
+/* ───────────── RESET & VARIABLES ───────────── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0b0e17;--surface:#121829;--surface2:#1a2238;--surface3:#222b45;
+  --border:#2a3456;--text:#e2e8f0;--muted:#8892b0;
+  --cyan:#00e5ff;--green:#00e676;--orange:#ff9100;--red:#ff1744;
+  --purple:#b388ff;--pink:#f48fb1;
+  --grad1:linear-gradient(135deg,#00e5ff22,#b388ff11);
+  --glass:rgba(18,24,41,.72);--radius:12px;
+}
+html{font-size:14px}
+body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+a{color:var(--cyan);text-decoration:none}
+
+/* ───────────── HEADER ───────────── */
+.header{background:var(--surface);border-bottom:1px solid var(--border);padding:12px 32px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;backdrop-filter:blur(12px)}
+.header .logo{display:flex;align-items:center;gap:10px;font-size:1.25rem;font-weight:700;letter-spacing:-.5px}
+.header .logo i{color:var(--cyan);font-size:1.5rem}
+.header .logo span{background:linear-gradient(135deg,var(--cyan),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+
+/* ───────────── TABS ───────────── */
+.tabs{display:flex;gap:4px}
+.tab-btn{background:transparent;border:none;color:var(--muted);padding:10px 22px;font-size:.95rem;cursor:pointer;border-radius:8px 8px 0 0;transition:all .25s;font-weight:600;position:relative}
+.tab-btn:hover{color:var(--text);background:var(--surface2)}
+.tab-btn.active{color:var(--cyan);background:var(--surface2)}
+.tab-btn.active::after{content:'';position:absolute;bottom:0;left:20%;width:60%;height:2px;background:var(--cyan);border-radius:2px}
+
+/* ───────────── MAIN ───────────── */
+.main{max-width:1440px;margin:0 auto;padding:24px}
+.tab-content{display:none;animation:fadeUp .35s ease}
+.tab-content.active{display:block}
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+
+/* ───────────── CARDS / GLASS ───────────── */
+.card{background:var(--glass);border:1px solid var(--border);border-radius:var(--radius);padding:24px;backdrop-filter:blur(8px)}
+.card h3{margin-bottom:16px;font-size:1.1rem;display:flex;align-items:center;gap:8px}
+.card h3 i{color:var(--cyan)}
+.section-title{font-size:1.3rem;font-weight:700;margin-bottom:18px;display:flex;align-items:center;gap:10px}
+.section-title i{color:var(--cyan)}
+
+/* ───────────── FORM ELEMENTS ───────────── */
+label{display:block;font-weight:600;margin-bottom:6px;color:var(--text);font-size:.9rem}
+.hint{font-size:.78rem;color:var(--muted);margin-bottom:10px;line-height:1.5}
+input[type=text],input[type=number],input[type=password],input[type=url],textarea,select{
+  width:100%;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:10px 14px;color:var(--text);font-size:.9rem;transition:border .2s;font-family:inherit}
+input:focus,textarea:focus,select:focus{outline:none;border-color:var(--cyan);box-shadow:0 0 0 3px rgba(0,229,255,.12)}
+textarea{resize:vertical;min-height:120px;font-family:'Cascadia Code','Fira Code',monospace;font-size:.82rem}
+.row{display:grid;gap:20px}
+.row-2{grid-template-columns:1fr 1fr}
+.row-3{grid-template-columns:1fr 1fr 1fr}
+
+/* ───────────── BUTTONS ───────────── */
+.btn{display:inline-flex;align-items:center;gap:8px;padding:10px 24px;border:none;border-radius:8px;font-weight:700;font-size:.9rem;cursor:pointer;transition:all .2s;font-family:inherit}
+.btn-primary{background:linear-gradient(135deg,var(--cyan),#0091ea);color:#000}
+.btn-primary:hover{transform:translateY(-1px);box-shadow:0 4px 20px rgba(0,229,255,.3)}
+.btn-danger{background:linear-gradient(135deg,var(--red),#d50000);color:#fff}
+.btn-danger:hover{box-shadow:0 4px 20px rgba(255,23,68,.3)}
+.btn-secondary{background:var(--surface3);color:var(--text);border:1px solid var(--border)}
+.btn-secondary:hover{border-color:var(--cyan)}
+.btn-sm{padding:6px 14px;font-size:.82rem}
+.btn:disabled{opacity:.5;cursor:not-allowed;transform:none!important;box-shadow:none!important}
+.btn-group{display:flex;gap:10px;flex-wrap:wrap}
+
+/* ───────────── TOGGLE ───────────── */
+.toggle-row{display:flex;align-items:center;gap:12px;margin:10px 0}
+.toggle{position:relative;width:44px;height:24px;cursor:pointer}
+.toggle input{display:none}
+.toggle .slider{position:absolute;inset:0;background:var(--surface3);border-radius:24px;transition:.3s;border:1px solid var(--border)}
+.toggle .slider::before{content:'';position:absolute;height:18px;width:18px;left:2px;top:2px;background:var(--muted);border-radius:50%;transition:.3s}
+.toggle input:checked+.slider{background:var(--cyan);border-color:var(--cyan)}
+.toggle input:checked+.slider::before{transform:translateX(20px);background:#000}
+
+/* ───────────── PASSWORD TOGGLE ───────────── */
+.pwd-wrap{position:relative}
+.pwd-wrap input{padding-right:40px}
+.pwd-toggle{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--muted);cursor:pointer;font-size:1rem}
+
+/* ───────────── HOW-TO COLLAPSIBLE ───────────── */
+.howto{margin-top:6px;margin-bottom:14px}
+.howto summary{font-size:.8rem;color:var(--cyan);cursor:pointer;user-select:none;display:flex;align-items:center;gap:6px}
+.howto summary i{font-size:.75rem}
+.howto .howto-body{margin-top:8px;padding:12px;background:var(--surface);border-radius:8px;font-size:.8rem;color:var(--muted);line-height:1.7;border-left:3px solid var(--cyan)}
+.howto .howto-body code{background:var(--surface3);padding:2px 6px;border-radius:4px;font-family:'Cascadia Code','Fira Code',monospace;color:var(--green);font-size:.78rem}
+
+/* ═══════════════════════════════════════════════
+   TAB 1 — TRAFFIC MONITOR
+   ═══════════════════════════════════════════════ */
+/* STATS BAR */
+.stats-bar{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-bottom:22px}
+.stat-card{background:var(--glass);border:1px solid var(--border);border-radius:var(--radius);padding:16px 20px;text-align:center;position:relative;overflow:hidden}
+.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.stat-card.c1::before{background:var(--cyan)}
+.stat-card.c2::before{background:var(--green)}
+.stat-card.c3::before{background:var(--orange)}
+.stat-card.c4::before{background:var(--purple)}
+.stat-card.c5::before{background:var(--red)}
+.stat-card .val{font-size:1.8rem;font-weight:800;line-height:1.2}
+.stat-card .lbl{font-size:.75rem;color:var(--muted);margin-top:4px;text-transform:uppercase;letter-spacing:.5px}
+.stat-card.c1 .val{color:var(--cyan)}
+.stat-card.c2 .val{color:var(--green)}
+.stat-card.c3 .val{color:var(--orange)}
+.stat-card.c4 .val{color:var(--purple)}
+.stat-card.c5 .val{color:var(--red)}
+
+/* PIPELINE VIZ */
+.pipeline{display:grid;grid-template-columns:1fr 60px 2fr 60px 1fr;align-items:start;gap:0;margin-bottom:22px;min-height:280px}
+.pipe-col{display:flex;flex-direction:column;align-items:center}
+.pipe-box{background:var(--glass);border:1px solid var(--border);border-radius:var(--radius);padding:16px;width:100%;min-height:240px;position:relative;overflow:hidden}
+.pipe-box .pipe-title{text-align:center;font-weight:700;font-size:.85rem;text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;display:flex;align-items:center;justify-content:center;gap:8px}
+.pipe-box.producer-box .pipe-title{color:var(--cyan)}
+.pipe-box.topic-box .pipe-title{color:var(--green)}
+.pipe-box.consumer-box .pipe-title{color:var(--orange)}
+.pipe-box.producer-box{border-top:3px solid var(--cyan)}
+.pipe-box.topic-box{border-top:3px solid var(--green)}
+.pipe-box.consumer-box{border-top:3px solid var(--orange)}
+
+/* ARROW COLS */
+.arrow-col{display:flex;align-items:center;justify-content:center;min-height:240px;position:relative}
+.arrow-col .arrow-line{width:100%;height:3px;background:var(--border);position:relative}
+.arrow-col .arrow-line::after{content:'\f054';font-family:'Font Awesome 6 Free';font-weight:900;position:absolute;right:-6px;top:-9px;color:var(--muted);font-size:.9rem}
+
+/* PARTICLES */
+.particle{position:absolute;width:8px;height:8px;border-radius:50%;animation:particleMove 1.2s linear forwards;z-index:10;top:50%;margin-top:-4px}
+.particle.to-topic{background:var(--cyan);box-shadow:0 0 8px var(--cyan)}
+.particle.to-consumer{background:var(--green);box-shadow:0 0 8px var(--green)}
+@keyframes particleMove{0%{left:0;opacity:1}90%{opacity:1}100%{left:100%;opacity:0}}
+
+/* MSG ITEMS IN QUEUES */
+.msg-list{display:flex;flex-direction:column;gap:6px;max-height:350px;overflow-y:auto;padding-right:4px}
+.msg-list::-webkit-scrollbar{width:4px}
+.msg-list::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
+.msg-item{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:8px 10px;font-size:.75rem;animation:msgIn .3s ease;position:relative;overflow:hidden}
+.msg-item.success{border-left:3px solid var(--green)}
+.msg-item.fail{border-left:3px solid var(--red)}
+.msg-item .msg-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
+.msg-item .msg-email{color:var(--cyan);font-weight:600;font-family:monospace}
+.msg-item .msg-time{color:var(--muted);font-size:.7rem}
+.msg-item .msg-meta{color:var(--muted);font-size:.7rem}
+.msg-item .msg-status{font-size:.7rem;font-weight:700;padding:2px 8px;border-radius:4px}
+.msg-item .msg-status.ok{background:rgba(0,230,118,.15);color:var(--green)}
+.msg-item .msg-status.err{background:rgba(255,23,68,.15);color:var(--red)}
+@keyframes msgIn{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
+
+/* KAFKA MSG CARDS */
+.kafka-msg{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:8px 10px;font-size:.72rem;animation:msgIn .35s ease;border-left:3px solid var(--green)}
+.kafka-msg .kf-row{display:flex;gap:12px;flex-wrap:wrap}
+.kafka-msg .kf-label{color:var(--muted)}
+.kafka-msg .kf-val{color:var(--green);font-family:monospace}
+.kafka-msg .kf-key{color:var(--purple);font-family:monospace}
+
+/* CONSUMER ITEM */
+.consumer-msg{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:8px 10px;font-size:.72rem;animation:msgIn .4s ease;border-left:3px solid var(--orange)}
+.consumer-msg .cm-name{color:var(--orange);font-weight:700}
+.consumer-msg .cm-email{color:var(--cyan);font-family:monospace}
+
+/* EVENT LOG */
+.event-log-wrap{margin-top:18px}
+.event-log{max-height:220px;overflow-y:auto;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:12px;font-family:'Cascadia Code','Fira Code',monospace;font-size:.78rem;line-height:1.8}
+.event-log::-webkit-scrollbar{width:4px}
+.event-log::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
+.log-line{display:flex;gap:12px;padding:2px 0;border-bottom:1px solid rgba(42,52,86,.3)}
+.log-line .log-time{color:var(--muted);min-width:85px}
+.log-line .log-status{min-width:50px;font-weight:700}
+.log-line .log-status.ok{color:var(--green)}
+.log-line .log-status.err{color:var(--red)}
+.log-line .log-msg{color:var(--text)}
+
+/* ═══════════════════════════════════════════════
+   TAB 3 — ABOUT
+   ═══════════════════════════════════════════════ */
+.about-grid{display:grid;grid-template-columns:1fr 1fr;gap:22px}
+@media(max-width:900px){.about-grid{grid-template-columns:1fr}}
+.about-card{background:var(--glass);border:1px solid var(--border);border-radius:var(--radius);padding:28px}
+.about-card h3{font-size:1.15rem;margin-bottom:14px;display:flex;align-items:center;gap:10px}
+.about-card h3 i{font-size:1.3rem}
+.about-card p,.about-card li{color:var(--muted);line-height:1.8;font-size:.9rem}
+.about-card ul{padding-left:20px}
+.about-card ul li{margin-bottom:6px}
+
+/* ARCHITECTURE DIAGRAM */
+.arch-diagram{display:flex;align-items:center;justify-content:center;gap:0;flex-wrap:wrap;margin:20px 0}
+.arch-node{background:var(--surface);border:2px solid var(--border);border-radius:12px;padding:14px 22px;text-align:center;font-weight:700;font-size:.85rem;min-width:110px;position:relative}
+.arch-node.prod{border-color:var(--cyan);color:var(--cyan)}
+.arch-node.topic{border-color:var(--green);color:var(--green)}
+.arch-node.cons{border-color:var(--orange);color:var(--orange)}
+.arch-node i{display:block;font-size:1.5rem;margin-bottom:6px}
+.arch-arrow{color:var(--muted);font-size:1.5rem;padding:0 8px}
+
+/* PARTITION VISUAL */
+.partition-visual{display:flex;gap:8px;margin:14px 0}
+.pv-lane{flex:1;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:10px;text-align:center}
+.pv-lane .pv-name{font-size:.75rem;color:var(--muted);margin-bottom:8px}
+.pv-block{background:var(--surface3);border:1px solid var(--border);border-radius:4px;padding:4px 8px;margin:3px 0;font-size:.7rem;color:var(--green);font-family:monospace}
+
+/* ───────────── RESPONSIVE ───────────── */
+@media(max-width:1100px){
+  .pipeline{grid-template-columns:1fr;gap:14px}
+  .arrow-col{min-height:40px}
+  .arrow-col .arrow-line{width:3px;height:30px}
+  .arrow-col .arrow-line::after{content:'\f078';right:auto;bottom:-6px;top:auto;left:50%;transform:translateX(-50%)}
+  .row-2,.row-3{grid-template-columns:1fr}
+}
+@media(max-width:768px){
+  .header{padding:10px 16px;flex-direction:column;gap:10px}
+  .main{padding:14px}
+  .stats-bar{grid-template-columns:repeat(auto-fit,minmax(120px,1fr))}
+}
+
+/* ───────────── SCROLLBAR ───────────── */
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
+
+/* ───────────── TOAST ───────────── */
+.toast-container{position:fixed;top:80px;right:24px;z-index:9999;display:flex;flex-direction:column;gap:8px}
+.toast{padding:12px 20px;border-radius:8px;font-size:.85rem;font-weight:600;animation:toastIn .3s ease;backdrop-filter:blur(8px);border:1px solid var(--border)}
+.toast.success{background:rgba(0,230,118,.15);color:var(--green);border-color:var(--green)}
+.toast.error{background:rgba(255,23,68,.15);color:var(--red);border-color:var(--red)}
+.toast.info{background:rgba(0,229,255,.15);color:var(--cyan);border-color:var(--cyan)}
+@keyframes toastIn{from{opacity:0;transform:translateX(30px)}to{opacity:1;transform:translateX(0)}}
+
+/* ───────────── GLOW PULSE ───────────── */
+.glow-pulse{animation:glowPulse 2s ease-in-out infinite}
+@keyframes glowPulse{0%,100%{box-shadow:0 0 5px rgba(0,229,255,.2)}50%{box-shadow:0 0 20px rgba(0,229,255,.4)}}
+
+/* ───────────── RUNNING INDICATOR ───────────── */
+.running-badge{display:inline-flex;align-items:center;gap:6px;padding:4px 12px;border-radius:20px;font-size:.78rem;font-weight:700;background:rgba(0,230,118,.12);color:var(--green);border:1px solid var(--green)}
+.running-badge .dot{width:8px;height:8px;border-radius:50%;background:var(--green);animation:blink 1s infinite}
+.stopped-badge{display:inline-flex;align-items:center;gap:6px;padding:4px 12px;border-radius:20px;font-size:.78rem;font-weight:700;background:rgba(136,146,176,.12);color:var(--muted);border:1px solid var(--border)}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+</style>
+</head>
+<body>
+
+<!-- ════════════ HEADER ════════════ -->
+<header class="header">
+  <div class="logo">
+    <i class="fa-solid fa-diagram-project"></i>
+    <span>Kafka Queue Simulator</span>
+    <span style="font-weight:400;font-size:.85rem;color:var(--muted);margin-left:6px">UCPM Integration Demo</span>
+  </div>
+  <nav class="tabs">
+    <button class="tab-btn active" data-tab="monitor"><i class="fa-solid fa-chart-line"></i> Traffic Monitor</button>
+    <button class="tab-btn" data-tab="config"><i class="fa-solid fa-sliders"></i> Configuration</button>
+    <button class="tab-btn" data-tab="about"><i class="fa-solid fa-graduation-cap"></i> About Kafka</button>
+  </nav>
+  <div id="statusBadge" class="stopped-badge"><span class="dot" style="background:var(--muted)"></span> Stopped</div>
+</header>
+
+<!-- ════════════ TOAST CONTAINER ════════════ -->
+<div class="toast-container" id="toasts"></div>
+
+<!-- ════════════ MAIN ════════════ -->
+<div class="main">
+
+<!-- ═══════════════════════════════════════
+     TAB 1 — TRAFFIC MONITOR
+     ═══════════════════════════════════════ -->
+<div class="tab-content active" id="tab-monitor">
+  <!-- STATS -->
+  <div class="stats-bar">
+    <div class="stat-card c1"><div class="val" id="sSent">0</div><div class="lbl">Sent</div></div>
+    <div class="stat-card c2"><div class="val" id="sSuccess">0</div><div class="lbl">Success</div></div>
+    <div class="stat-card c5"><div class="val" id="sFailed">0</div><div class="lbl">Failed</div></div>
+    <div class="stat-card c3"><div class="val" id="sQueue">0</div><div class="lbl">In Queue</div></div>
+    <div class="stat-card c4"><div class="val" id="sThroughput">0</div><div class="lbl">msg / min</div></div>
+  </div>
+
+  <!-- PIPELINE -->
+  <div class="pipeline">
+    <!-- PRODUCER -->
+    <div class="pipe-col">
+      <div class="pipe-box producer-box">
+        <div class="pipe-title"><i class="fa-solid fa-paper-plane"></i> Producer (API Calls)</div>
+        <div class="msg-list" id="producerList"></div>
+      </div>
+    </div>
+    <!-- ARROW -->
+    <div class="arrow-col"><div class="arrow-line" id="arrow1"></div></div>
+    <!-- KAFKA TOPIC -->
+    <div class="pipe-col">
+      <div class="pipe-box topic-box">
+        <div class="pipe-title"><i class="fa-solid fa-layer-group"></i> Kafka Topic: consent_events</div>
+        <div class="msg-list" id="kafkaList"></div>
+      </div>
+    </div>
+    <!-- ARROW -->
+    <div class="arrow-col"><div class="arrow-line" id="arrow2"></div></div>
+    <!-- CONSUMERS -->
+    <div class="pipe-col">
+      <div class="pipe-box consumer-box">
+        <div class="pipe-title"><i class="fa-solid fa-server"></i> Consumers</div>
+        <div class="msg-list" id="consumerList"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- EVENT LOG -->
+  <div class="event-log-wrap card">
+    <h3><i class="fa-solid fa-terminal"></i> Event Log</h3>
+    <div class="event-log" id="eventLog">
+      <div class="log-line"><span class="log-time">--:--:--</span><span class="log-status" style="color:var(--muted)">INFO</span><span class="log-msg">Waiting for simulation to start…</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     TAB 2 — CONFIGURATION
+     ═══════════════════════════════════════ -->
+<div class="tab-content" id="tab-config">
+
+  <!-- TOP: SENDING CONFIG -->
+  <div class="card" style="margin-bottom:22px">
+    <div class="section-title"><i class="fa-solid fa-rocket"></i> Sending Configuration</div>
+
+    <div class="row row-3" style="margin-bottom:18px">
+      <div>
+        <label><i class="fa-solid fa-envelope"></i> Email Seed</label>
+        <input type="text" id="cfgEmail" placeholder="user_(x)@yourdomain.com" value="test_user_(x)@example.com">
+        <div class="hint"><code>(x)</code> will be replaced by an incrementing counter (1, 2, 3…) for each signal sent.</div>
+        <details class="howto"><summary><i class="fa-solid fa-circle-info"></i> How this works</summary>
+          <div class="howto-body">
+            When the simulator sends each signal, it replaces <code>(x)</code> in the email with the current counter value.<br>
+            Example: if seed is <code>user_(x)@test.com</code>, the first signal uses <code>user_1@test.com</code>, the second <code>user_2@test.com</code>, etc.<br>
+            This ensures each consent signal is sent for a <strong>unique user identifier</strong>.
+          </div>
+        </details>
+      </div>
+      <div>
+        <label><i class="fa-solid fa-hashtag"></i> Number of Signals</label>
+        <input type="number" id="cfgCount" min="1" max="10000" value="10">
+        <div class="hint">Total number of consent signals that will be sent to the Collection Point API.</div>
+      </div>
+      <div>
+        <label><i class="fa-solid fa-gauge-high"></i> Throttling (msg/min)</label>
+        <input type="number" id="cfgThrottle" min="1" max="6000" value="60">
+        <div class="hint">Controls sending speed. E.g. <code>60</code> = 1 message/second. Calls are sent asynchronously.</div>
+        <details class="howto"><summary><i class="fa-solid fa-circle-info"></i> About throttling</summary>
+          <div class="howto-body">
+            Messages are dispatched asynchronously using timed intervals.<br>
+            The interval between each message = <code>60000 / throttle</code> ms.<br>
+            For example, 120 msg/min = one message every 500ms.<br>
+            This is safe to run in a browser or in a <strong>GitLab CI job</strong> (Node.js with <code>setTimeout</code>/<code>setInterval</code>).
+          </div>
+        </details>
+      </div>
+    </div>
+
+    <div class="btn-group">
+      <button class="btn btn-primary" id="btnStart" onclick="startSimulation()"><i class="fa-solid fa-play"></i> Start</button>
+      <button class="btn btn-danger" id="btnStop" onclick="stopSimulation()" disabled><i class="fa-solid fa-stop"></i> Stop</button>
+      <button class="btn btn-secondary" id="btnReset" onclick="resetSimulation()"><i class="fa-solid fa-arrow-rotate-left"></i> Reset</button>
+      <button class="btn btn-secondary" id="btnTest" onclick="testConnection()"><i class="fa-solid fa-plug"></i> Test Connection</button>
+    </div>
+  </div>
+
+  <!-- BOTTOM: API ENVIRONMENT -->
+  <div class="card">
+    <div class="section-title"><i class="fa-solid fa-cloud"></i> API Environment (Collection Point)</div>
+
+    <div style="margin-bottom:18px">
+      <label><i class="fa-solid fa-link"></i> Your API URL</label>
+      <input type="url" id="cfgUrl" placeholder="https://app.onetrust.com/api/consentmanager/v2/datasubjects/profiles">
+      <div class="hint">The full endpoint URL of your OneTrust Collection Point API.</div>
+      <details class="howto"><summary><i class="fa-solid fa-circle-info"></i> How to get this</summary>
+        <div class="howto-body">
+          1. Log in to <strong>OneTrust</strong> → Navigate to <strong>Consent & Preferences</strong>.<br>
+          2. Go to <strong>Integrations</strong> → <strong>Collection Points</strong>.<br>
+          3. Select (or create) your Collection Point.<br>
+          4. Click on <strong>API Integration</strong> / <strong>API Details</strong>.<br>
+          5. Copy the <strong>API Host URL</strong> shown (e.g. <code>https://app.onetrust.com/api/consentmanager/v2/datasubjects/profiles</code>).<br>
+          6. If your tenant has a custom subdomain, the URL may differ (e.g. <code>https://your-company.onetrust.com/...</code>).
+        </div>
+      </details>
+    </div>
+
+    <div style="margin-bottom:18px">
+      <label><i class="fa-solid fa-key"></i> Your API Token</label>
+      <div class="pwd-wrap">
+        <input type="password" id="cfgToken" placeholder="Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6...">
+        <button class="pwd-toggle" onclick="togglePwd()" title="Show/Hide"><i class="fa-solid fa-eye" id="pwdIcon"></i></button>
+      </div>
+      <div class="hint">Your OAuth Bearer token for authenticating with the OneTrust API.</div>
+      <details class="howto"><summary><i class="fa-solid fa-circle-info"></i> How to get this</summary>
+        <div class="howto-body">
+          1. In OneTrust, go to <strong>Settings</strong> (gear icon) → <strong>Access Management</strong> → <strong>API Credentials</strong>.<br>
+          2. Click <strong>Add New</strong> → give it a name and select the proper scopes (at minimum <code>Consent</code>).<br>
+          3. Copy the <strong>Client ID</strong> and <strong>Client Secret</strong>.<br>
+          4. Generate a Bearer token via the OAuth endpoint:<br>
+          <code>POST https://app.onetrust.com/api/access/v1/oauth/token</code><br>
+          with body: <code>grant_type=client_credentials&client_id=YOUR_ID&client_secret=YOUR_SECRET</code><br>
+          5. The response contains <code>access_token</code> — paste it here prefixed with <code>Bearer </code>.
+        </div>
+      </details>
+    </div>
+
+    <div style="margin-bottom:18px">
+      <label><i class="fa-solid fa-code"></i> Example Payload</label>
+      <textarea id="cfgPayload">{
+  "identifier": "(email)",
+  "requestInformation": "Kafka Simulator Demo",
+  "purposes": [
+    {
+      "Id": "your-purpose-id-here",
+      "TransactionType": "CONFIRMED"
+    }
+  ]
+}</textarea>
+      <div class="hint"><code>(email)</code> in the payload will be replaced by the generated email address for each signal. Customise the JSON to match your Collection Point schema.</div>
+      <details class="howto"><summary><i class="fa-solid fa-circle-info"></i> How to customise the payload</summary>
+        <div class="howto-body">
+          The payload must match your <strong>Collection Point schema</strong> in OneTrust.<br>
+          • <code>identifier</code>: the data subject's unique identifier (email, phone, etc.).<br>
+          • <code>purposes</code>: array of purpose objects. Get the <strong>Purpose ID</strong> from:<br>
+          &nbsp;&nbsp;OneTrust → Consent → Purposes → click your purpose → copy the <strong>ID</strong> from the URL or details panel.<br>
+          • <code>TransactionType</code>: typically <code>CONFIRMED</code> (opt-in), <code>WITHDRAWN</code> (opt-out), or <code>NOT_GIVEN</code>.<br>
+          • You can add any additional fields your Collection Point expects (e.g. <code>customPayload</code>, <code>consentLanguage</code>, etc.).
+        </div>
+      </details>
+    </div>
+
+    <div class="toggle-row">
+      <label class="toggle">
+        <input type="checkbox" id="cfgFlexible">
+        <span class="slider"></span>
+      </label>
+      <span><strong>Flexible Payload</strong> — When enabled, the payload is sent as-is (no <code>(email)</code> replacement). Useful for testing custom/dynamic payloads.</span>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     TAB 3 — ABOUT KAFKA
+     ═══════════════════════════════════════ -->
+<div class="tab-content" id="tab-about">
+  <div class="section-title" style="margin-bottom:22px"><i class="fa-solid fa-graduation-cap"></i> Understanding Apache Kafka & Consent Queues</div>
+
+  <!-- ARCHITECTURE DIAGRAM -->
+  <div class="card" style="margin-bottom:22px">
+    <h3><i class="fa-solid fa-sitemap"></i> How it Works — End-to-End Architecture</h3>
+    <div class="arch-diagram">
+      <div class="arch-node prod"><i class="fa-solid fa-globe"></i>CMP / SDK<br><small style="color:var(--muted);font-weight:400">Consent Collection</small></div>
+      <div class="arch-arrow"><i class="fa-solid fa-arrow-right"></i></div>
+      <div class="arch-node prod"><i class="fa-solid fa-cloud-arrow-up"></i>API Collection<br>Point<small style="color:var(--muted);font-weight:400"> (OneTrust)</small></div>
+      <div class="arch-arrow"><i class="fa-solid fa-arrow-right"></i></div>
+      <div class="arch-node topic"><i class="fa-solid fa-layer-group"></i>Kafka Topic<br><small style="color:var(--muted);font-weight:400">consent_events</small></div>
+      <div class="arch-arrow"><i class="fa-solid fa-arrow-right"></i></div>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <div class="arch-node cons"><i class="fa-solid fa-database"></i>Snowflake</div>
+        <div class="arch-node cons"><i class="fa-solid fa-cloud"></i>Salesforce</div>
+        <div class="arch-node cons"><i class="fa-solid fa-bullhorn"></i>Braze</div>
+      </div>
+    </div>
+    <p style="text-align:center;color:var(--muted);font-size:.85rem;margin-top:12px">
+      Consent signals travel from the user's browser → OneTrust API → Kafka topic → downstream consumers in real time.
+    </p>
+  </div>
+
+  <div class="about-grid">
+    <!-- WHAT IS KAFKA -->
+    <div class="about-card">
+      <h3><i class="fa-solid fa-circle-question" style="color:var(--cyan)"></i> What is Apache Kafka?</h3>
+      <p>Apache Kafka is a <strong>distributed event streaming platform</strong> designed for high-throughput, fault-tolerant, real-time data pipelines. Think of it as a <strong>highly scalable message queue</strong> that retains messages on disk, allowing multiple consumers to read the same data independently.</p>
+      <br>
+      <p>Unlike traditional message brokers (RabbitMQ, ActiveMQ), Kafka:</p>
+      <ul>
+        <li><strong>Persists messages</strong> — consumers can replay data.</li>
+        <li><strong>Scales horizontally</strong> — add brokers to increase throughput.</li>
+        <li><strong>Decouples producers &amp; consumers</strong> — they don't need to know about each other.</li>
+      </ul>
+    </div>
+
+    <!-- KEY CONCEPTS -->
+    <div class="about-card">
+      <h3><i class="fa-solid fa-key" style="color:var(--green)"></i> Key Concepts</h3>
+      <ul>
+        <li><strong>Topic</strong> — A named stream of records (e.g. <code>consent_events</code>). Messages are published to topics.</li>
+        <li><strong>Partition</strong> — Topics are split into partitions for parallelism. Each partition is an ordered, immutable log.</li>
+        <li><strong>Offset</strong> — A unique sequential ID for each message within a partition. Consumers track their position via offsets.</li>
+        <li><strong>Producer</strong> — An application that publishes messages to a topic.</li>
+        <li><strong>Consumer / Consumer Group</strong> — Applications that read messages. Within a group, each partition is consumed by exactly one member.</li>
+        <li><strong>Broker</strong> — A Kafka server that stores data and serves clients.</li>
+      </ul>
+    </div>
+
+    <!-- PARTITIONS VISUAL -->
+    <div class="about-card">
+      <h3><i class="fa-solid fa-bars-staggered" style="color:var(--purple)"></i> Partitions — Visual Example</h3>
+      <p style="margin-bottom:12px">A topic with 3 partitions. Messages are distributed (usually by key hash) across partitions:</p>
+      <div class="partition-visual">
+        <div class="pv-lane">
+          <div class="pv-name">Partition 0</div>
+          <div class="pv-block">offset 0: user_1</div>
+          <div class="pv-block">offset 1: user_4</div>
+          <div class="pv-block">offset 2: user_7</div>
+        </div>
+        <div class="pv-lane">
+          <div class="pv-name">Partition 1</div>
+          <div class="pv-block">offset 0: user_2</div>
+          <div class="pv-block">offset 1: user_5</div>
+          <div class="pv-block">offset 2: user_8</div>
+        </div>
+        <div class="pv-lane">
+          <div class="pv-name">Partition 2</div>
+          <div class="pv-block">offset 0: user_3</div>
+          <div class="pv-block">offset 1: user_6</div>
+          <div class="pv-block">offset 2: user_9</div>
+        </div>
+      </div>
+      <p style="color:var(--muted);font-size:.82rem">Each consumer in a group is assigned one or more partitions. This enables parallel processing.</p>
+    </div>
+
+    <!-- UCPM CONTEXT -->
+    <div class="about-card">
+      <h3><i class="fa-solid fa-shield-halved" style="color:var(--orange)"></i> Kafka in UCPM / Consent Management</h3>
+      <p>In a Universal Consent & Preference Management (UCPM) context, Kafka acts as the <strong>backbone for consent signal distribution</strong>:</p>
+      <br>
+      <ul>
+        <li><strong>Ingestion</strong> — Consent signals (opt-in, opt-out) are collected via APIs/SDKs and published to a Kafka topic.</li>
+        <li><strong>Fan-out</strong> — Multiple downstream systems (CRM, data warehouse, marketing tools) each have their own consumer group, receiving every signal independently.</li>
+        <li><strong>Replay</strong> — If a system goes down, it can replay from its last committed offset — <strong>no data loss</strong>.</li>
+        <li><strong>Audit trail</strong> — Kafka retains consent events for configurable periods, providing a compliance-ready log.</li>
+        <li><strong>Real-time</strong> — Consumers process signals within milliseconds, ensuring downstream systems are always in sync with the user's latest preferences.</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+</div><!-- /.main -->
+
+<!-- ════════════ JAVASCRIPT ════════════ -->
+<script>
+/* ─── TAB SWITCHING ─── */
+document.querySelectorAll('.tab-btn').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('tab-'+btn.dataset.tab).classList.add('active');
+  });
+});
+
+/* ─── PASSWORD TOGGLE ─── */
+function togglePwd(){
+  const inp=document.getElementById('cfgToken');
+  const ico=document.getElementById('pwdIcon');
+  if(inp.type==='password'){inp.type='text';ico.className='fa-solid fa-eye-slash'}
+  else{inp.type='password';ico.className='fa-solid fa-eye'}
+}
+
+/* ─── TOASTS ─── */
+function toast(msg,type='info'){
+  const el=document.createElement('div');
+  el.className='toast '+type;
+  el.textContent=msg;
+  document.getElementById('toasts').appendChild(el);
+  setTimeout(()=>el.remove(),4000);
+}
+
+/* ─── STATE ─── */
+let sim={running:false,timer:null,counter:0,sent:0,success:0,failed:0,queue:0,startTime:null,kafkaOffset:0};
+const consumers=['Snowflake','Salesforce','Braze'];
+
+function updateStats(){
+  document.getElementById('sSent').textContent=sim.sent;
+  document.getElementById('sSuccess').textContent=sim.success;
+  document.getElementById('sFailed').textContent=sim.failed;
+  document.getElementById('sQueue').textContent=sim.queue;
+  if(sim.startTime){
+    const mins=(Date.now()-sim.startTime)/60000;
+    document.getElementById('sThroughput').textContent=mins>0?Math.round(sim.sent/mins):0;
+  }
+}
+
+function timeStr(){return new Date().toLocaleTimeString('en-GB')}
+
+function addLog(status,msg){
+  const log=document.getElementById('eventLog');
+  const line=document.createElement('div');
+  line.className='log-line';
+  line.innerHTML=`<span class="log-time">${timeStr()}</span><span class="log-status ${status==='OK'?'ok':'err'}">${status}</span><span class="log-msg">${msg}</span>`;
+  log.prepend(line);
+  if(log.children.length>200)log.lastElementChild.remove();
+}
+
+/* ─── PARTICLE ANIMATION ─── */
+function spawnParticle(arrowId,cls){
+  const arrow=document.getElementById(arrowId);
+  const p=document.createElement('div');
+  p.className='particle '+cls;
+  arrow.appendChild(p);
+  setTimeout(()=>p.remove(),1300);
+}
+
+/* ─── ADD PRODUCER MSG ─── */
+function addProducerMsg(email,ok){
+  const list=document.getElementById('producerList');
+  const el=document.createElement('div');
+  el.className='msg-item '+(ok?'success':'fail');
+  el.innerHTML=`
+    <div class="msg-top">
+      <span class="msg-email">${email}</span>
+      <span class="msg-status ${ok?'ok':'err'}">${ok?'200 OK':'ERROR'}</span>
+    </div>
+    <div class="msg-time">${timeStr()}</div>`;
+  list.prepend(el);
+  if(list.children.length>50)list.lastElementChild.remove();
+}
+
+/* ─── ADD KAFKA MSG ─── */
+function addKafkaMsg(email,offset){
+  sim.queue++;
+  updateStats();
+  const list=document.getElementById('kafkaList');
+  const partition=Math.abs(hashCode(email))%3;
+  const el=document.createElement('div');
+  el.className='kafka-msg';
+  el.id='kfmsg-'+offset;
+  el.innerHTML=`
+    <div class="kf-row"><span class="kf-label">offset:</span><span class="kf-val">${offset}</span>
+    <span class="kf-label">partition:</span><span class="kf-val">${partition}</span></div>
+    <div class="kf-row"><span class="kf-label">key:</span><span class="kf-key">${email}</span></div>
+    <div class="kf-row"><span class="kf-label">ts:</span><span class="kf-val">${timeStr()}</span></div>`;
+  list.prepend(el);
+  if(list.children.length>50)list.lastElementChild.remove();
+  // simulate consumer pickup after random delay
+  const delay=800+Math.random()*2000;
+  setTimeout(()=>consumeMsg(email,offset),delay);
+}
+
+function hashCode(s){let h=0;for(let i=0;i<s.length;i++){h=((h<<5)-h)+s.charCodeAt(i);h|=0}return h}
+
+/* ─── CONSUME MSG ─── */
+function consumeMsg(email,offset){
+  const el=document.getElementById('kfmsg-'+offset);
+  if(el)el.style.opacity='.3';
+  sim.queue=Math.max(0,sim.queue-1);
+  updateStats();
+  spawnParticle('arrow2','to-consumer');
+  const consumer=consumers[Math.abs(hashCode(email))%consumers.length];
+  const clist=document.getElementById('consumerList');
+  const cel=document.createElement('div');
+  cel.className='consumer-msg';
+  cel.innerHTML=`<span class="cm-name">${consumer}</span> <span class="cm-email">${email}</span> <span style="color:var(--muted);font-size:.68rem">offset ${offset}</span>`;
+  clist.prepend(cel);
+  if(clist.children.length>50)clist.lastElementChild.remove();
+  addLog('OK',`Consumer [${consumer}] processed offset ${offset} → ${email}`);
+}
+
+/* ─── SEND ONE SIGNAL ─── */
+async function sendSignal(){
+  if(!sim.running)return;
+  sim.counter++;
+  const emailSeed=document.getElementById('cfgEmail').value||'test_(x)@example.com';
+  const email=emailSeed.replace(/\(x\)/g,sim.counter);
+  const url=document.getElementById('cfgUrl').value;
+  const token=document.getElementById('cfgToken').value;
+  const flexible=document.getElementById('cfgFlexible').checked;
+  let payloadStr=document.getElementById('cfgPayload').value;
+  if(!flexible){payloadStr=payloadStr.replace(/\(email\)/g,email)}
+
+  sim.sent++;
+  updateStats();
+  addLog('INFO',`Sending signal #${sim.counter} → ${email}`);
+  spawnParticle('arrow1','to-topic');
+
+  if(!url){
+    // Demo mode — no real API call
+    addProducerMsg(email,true);
+    sim.success++;
+    updateStats();
+    addLog('OK',`[DEMO] Signal accepted → ${email}`);
+    const offset=sim.kafkaOffset++;
+    setTimeout(()=>addKafkaMsg(email,offset),400);
+    return;
+  }
+
+  try{
+    const resp=await fetch(url,{
+      method:'POST',
+      headers:{'Content-Type':'application/json','Authorization':token},
+      body:payloadStr
+    });
+    if(resp.ok){
+      addProducerMsg(email,true);
+      sim.success++;
+      updateStats();
+      addLog('OK',`${resp.status} — Signal accepted → ${email}`);
+      const offset=sim.kafkaOffset++;
+      setTimeout(()=>addKafkaMsg(email,offset),400);
+    }else{
+      addProducerMsg(email,false);
+      sim.failed++;
+      updateStats();
+      addLog('ERR',`${resp.status} — ${resp.statusText} → ${email}`);
+    }
+  }catch(e){
+    addProducerMsg(email,false);
+    sim.failed++;
+    updateStats();
+    addLog('ERR',`Network error → ${email}: ${e.message}`);
+  }
+}
+
+/* ─── TEST CONNECTION ─── */
+async function testConnection(){
+  const url=document.getElementById('cfgUrl').value;
+  const token=document.getElementById('cfgToken').value;
+  if(!url){toast('Please enter an API URL first','error');return}
+  toast('Testing connection…','info');
+  try{
+    const resp=await fetch(url,{method:'OPTIONS',headers:{'Authorization':token}});
+    toast(`Connection test: ${resp.status} ${resp.statusText}`,(resp.ok||resp.status<500)?'success':'error');
+  }catch(e){
+    toast('Connection failed: '+e.message,'error');
+  }
+}
+
+/* ─── SIMULATION CONTROL ─── */
+function startSimulation(){
+  if(sim.running)return;
+  const count=parseInt(document.getElementById('cfgCount').value)||10;
+  const throttle=parseInt(document.getElementById('cfgThrottle').value)||60;
+  const interval=60000/throttle;
+
+  sim.running=true;
+  sim.startTime=sim.startTime||Date.now();
+  document.getElementById('btnStart').disabled=true;
+  document.getElementById('btnStop').disabled=false;
+
+  const badge=document.getElementById('statusBadge');
+  badge.className='running-badge';
+  badge.innerHTML='<span class="dot"></span> Running';
+
+  toast(`Simulation started: ${count} signals @ ${throttle} msg/min`,'success');
+  addLog('INFO',`▶ Simulation started — ${count} signals, ${throttle} msg/min (interval ${Math.round(interval)}ms)`);
+
+  let dispatched=0;
+  sim.timer=setInterval(()=>{
+    if(!sim.running||dispatched>=count){
+      stopSimulation();
+      if(dispatched>=count)toast('All signals dispatched!','success');
+      return;
+    }
+    dispatched++;
+    sendSignal();
+  },interval);
+}
+
+function stopSimulation(){
+  sim.running=false;
+  clearInterval(sim.timer);
+  document.getElementById('btnStart').disabled=false;
+  document.getElementById('btnStop').disabled=true;
+  const badge=document.getElementById('statusBadge');
+  badge.className='stopped-badge';
+  badge.innerHTML='<span class="dot" style="background:var(--muted)"></span> Stopped';
+  addLog('INFO','■ Simulation stopped');
+}
+
+function resetSimulation(){
+  stopSimulation();
+  sim={running:false,timer:null,counter:0,sent:0,success:0,failed:0,queue:0,startTime:null,kafkaOffset:0};
+  updateStats();
+  document.getElementById('producerList').innerHTML='';
+  document.getElementById('kafkaList').innerHTML='';
+  document.getElementById('consumerList').innerHTML='';
+  document.getElementById('eventLog').innerHTML='<div class="log-line"><span class="log-time">--:--:--</span><span class="log-status" style="color:var(--muted)">INFO</span><span class="log-msg">Waiting for simulation to start…</span></div>';
+  toast('Simulation reset','info');
+}
+</script>
+</body>
+</html>
